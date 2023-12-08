@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import GUI from 'lil-gui';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
+
 // GUI
 const gui = new GUI();
 gui.add( document, 'title' );
@@ -10,6 +11,7 @@ const scene = new THREE.Scene();
 // const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
 let camera;
 let controls;
+let rain, rainGeo, rainMaterial, rainCount = 10000;
 generateCamera();
 
 const renderer = new THREE.WebGLRenderer();
@@ -40,20 +42,55 @@ controls.update();
 // scene.add(skybox);
 
 // add skybox using cube mapping, have files nx, ny, nz, px, py, pz
-const loader = new THREE.CubeTextureLoader();
-const texture = loader.load([
-    './assets/px.png',
-    './assets/nx.png',
-    './assets/py.png',
-    './assets/ny.png',
-    './assets/pz.png',
-    './assets/nz.png',
-]);
+// const loader = new THREE.CubeTextureLoader();
+// const texture = loader.load([
+//     './assets/px.png',
+//     './assets/nx.png',
+//     './assets/py.png',
+//     './assets/ny.png',
+//     './assets/pz.png',
+//     './assets/nz.png',
+// ]);
 
-scene.background = texture;
+// scene.background = texture;
 
 
 
+// rainGeo = new THREE.BufferGeometry();
+// const positions = [];
+// for (let i = 0; i < rainCount; i++) {
+//     let rainDrop = new THREE.Vector3(
+//         Math.random() * 400 - 200,
+//         Math.random() * 500 - 250,
+//         Math.random() * 400 - 200
+//     );
+//     rainDrop.velocity = [];
+//     rainDrop.velocity = 0;
+//     rainGeo.vertices.push(rainDrop);
+// }
+rainGeo = new THREE.BufferGeometry();
+const positions = [];
+const velocities = []; // Separate array for velocities
+for (let i = 0; i < rainCount; i++) {
+    positions.push(Math.random() * 400 - 200);
+    positions.push(Math.random() * 500 - 250);
+    positions.push(Math.random() * 400 - 200);
+
+    // Initial velocity
+    velocities.push(0); // Assuming initial velocity is 0
+}
+rainGeo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+rainGeo.setAttribute('velocity', new THREE.Float32BufferAttribute(velocities, 1));
+
+
+rainMaterial = new THREE.PointsMaterial({
+    color: 0x30B4C9,
+    size: 0.35,
+    transparent: true
+});
+
+rain = new THREE.Points(rainGeo, rainMaterial);
+scene.add(rain);
 
 
 
@@ -260,6 +297,39 @@ function animate() {
 	// largerHexagon.rotation.x += 0.009;
     // largerHexagon.rotation.y += 0.009;
     controls.update();
+
+    // Update positions and velocities
+    let positions = rainGeo.attributes.position;
+    let velocities = rainGeo.attributes.velocity;
+    let count = positions.count;
+
+    for (let i = 0; i < count; i++) {
+        // Update velocity
+        // let velocity = velocities.getX(i) - 0.1 + Math.random() * 0.1;
+        // make velocity slow
+        let velocity = velocities.getX(i) - 0.01 + Math.random() * 0.01;
+
+        // after velocity reaches a certain point, reset it to 0
+        if (velocity > 0.25) {
+            velocity = 0;
+        }
+
+        // reset velocity periodically
+        velocities.setX(i, velocity);
+
+        // Update position
+        let y = positions.getY(i) + velocity;
+        if (y < -200) {
+            y = 200;
+            velocity = 0;
+        }
+        positions.setY(i, y);
+    }
+
+    positions.needsUpdate = true;
+    rain.rotation.y += 0.002;
+    // velocities.needsUpdate = true;
+
 
 	renderer.render( scene, camera );
 }
