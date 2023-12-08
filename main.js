@@ -21,7 +21,7 @@ generateCamera();
 
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize( window.innerWidth, window.innerHeight );
-// renderer.setClearColor(0xF5F5DC); // Set background color to beige
+renderer.setClearColor(0x181716); // Set background color to beige
 // add shadow support
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
@@ -47,17 +47,17 @@ controls.update();
 // scene.add(skybox);
 
 // add skybox using cube mapping, have files nx, ny, nz, px, py, pz
-const loader = new THREE.CubeTextureLoader();
-const texture = loader.load([
-    './assets/px.png',
-    './assets/nx.png',
-    './assets/py.png',
-    './assets/ny.png',
-    './assets/pz.png',
-    './assets/nz.png',
-]);
+// const loader = new THREE.CubeTextureLoader();
+// const texture = loader.load([
+//     './assets/px.png',
+//     './assets/nx.png',
+//     './assets/py.png',
+//     './assets/ny.png',
+//     './assets/pz.png',
+//     './assets/nz.png',
+// ]);
 
-scene.background = texture;
+// scene.background = texture;
 
 
 
@@ -255,8 +255,8 @@ function createHexagonTile() {
 
     // Add the larger hexagon tile to the scene
     // stoneGeo = mergeBufferGeometries([smallHexGeometry, stoneGeo]);
-    const largerHexagon = getCatan(6, 0);
-    scene.add(largerHexagon)
+    const largerHexagon = getCatan(6, 4);
+    scene.add(largerHexagon);
 })();
 
 // function hexMesh(geo, map) {

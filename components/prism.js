@@ -1,8 +1,17 @@
 import * as THREE from 'three';
+import SimplexNoise from 'https://cdn.skypack.dev/simplex-noise@3.0.0';
+
+const simplex = new SimplexNoise();
+const MAX_HEIGHT = 2; // adjust this for different types of terrains
 
 export function getPrisms(center, radius, level, yFlip) {
     if (level === 0) {
-        const geo = new THREE.CylinderGeometry(radius * 0.9, radius * 0.9, 1, 3);
+        // add simplex noise
+        let noise = (simplex.noise2D(center[0] * 0.3, center[2] * 0.3) + 1) * 0.5;
+        noise = Math.pow(noise, 1.5);
+        const height = noise * MAX_HEIGHT;
+        center[1] += height / 2;
+        const geo = new THREE.CylinderGeometry(radius * 0.95, radius * 0.95, height, 3);
         const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
         const mesh = new THREE.Mesh(geo, material);
         mesh.position.set(...center);
