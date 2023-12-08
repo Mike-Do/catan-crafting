@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import GUI from 'lil-gui';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
+// GUI
 const gui = new GUI();
 gui.add( document, 'title' );
 
@@ -183,8 +184,8 @@ scene.add(largerHexagon);
 
 camera.position.z = 10;
 
-largerHexagon.rotation.x += 5;
-largerHexagon.rotation.y += 5;
+// largerHexagon.rotation.x += 5;
+// largerHexagon.rotation.y += 5;
 
 function stone(height, position) {
     const px = Math.random() * 0.4;
@@ -252,7 +253,7 @@ cloudGeos.forEach(cloudGeo => {
     cloudGroup.add(cloudMesh);
 })
 
-
+// called every frame; core function that brings everything together
 function animate() {
 	requestAnimationFrame( animate );
 
