@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import GUI from 'lil-gui';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
+// GUI
 const gui = new GUI();
 gui.add( document, 'title' );
 
@@ -27,29 +28,29 @@ camera.position.set(0, 20, 100);
 controls.update();
 
 // add skybox called "catan_skybox.jpeg" sample the texture on the inside of the cube to make skybox using direction vectors
-const skyboxGeo = new THREE.BoxGeometry(1000, 1000, 1000);
-const skyboxTexture = new THREE.TextureLoader().load('./assets/catan_skybox.jpeg');
+// const skyboxGeo = new THREE.BoxGeometry(1000, 1000, 1000);
+// const skyboxTexture = new THREE.TextureLoader().load('./assets/catan_skybox.jpeg');
 
-const skyboxMaterial = new THREE.MeshBasicMaterial({
-    map: skyboxTexture,
-    side: THREE.BackSide
-});
+// const skyboxMaterial = new THREE.MeshBasicMaterial({
+//     map: skyboxTexture,
+//     side: THREE.BackSide
+// });
 
-const skybox = new THREE.Mesh(skyboxGeo, skyboxMaterial);
-scene.add(skybox);
+// const skybox = new THREE.Mesh(skyboxGeo, skyboxMaterial);
+// scene.add(skybox);
 
 // add skybox using cube mapping, have files nx, ny, nz, px, py, pz
-// const loader = new THREE.CubeTextureLoader();
-// const texture = loader.load([
-//     './assets/px.png',
-//     './assets/nx.png',
-//     './assets/py.png',
-//     './assets/ny.png',
-//     './assets/pz.png',
-//     './assets/nz.png',
-// ]);
+const loader = new THREE.CubeTextureLoader();
+const texture = loader.load([
+    './assets/px.png',
+    './assets/nx.png',
+    './assets/py.png',
+    './assets/ny.png',
+    './assets/pz.png',
+    './assets/nz.png',
+]);
 
-// scene.background = texture;
+scene.background = texture;
 
 
 
@@ -183,8 +184,8 @@ scene.add(largerHexagon);
 
 camera.position.z = 10;
 
-largerHexagon.rotation.x += 5;
-largerHexagon.rotation.y += 5;
+// largerHexagon.rotation.x += 5;
+// largerHexagon.rotation.y += 5;
 
 function stone(height, position) {
     const px = Math.random() * 0.4;
@@ -252,7 +253,7 @@ cloudGeos.forEach(cloudGeo => {
     cloudGroup.add(cloudMesh);
 })
 
-
+// called every frame; core function that brings everything together
 function animate() {
 	requestAnimationFrame( animate );
 
