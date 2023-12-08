@@ -9,6 +9,10 @@ generateCamera();
 
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize( window.innerWidth, window.innerHeight );
+renderer.setClearColor(0xF5F5DC); // Set background color to beige
+// add shadow support
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 document.body.appendChild( renderer.domElement );
 
 controls = new OrbitControls(camera, renderer.domElement);
@@ -17,6 +21,17 @@ camera.position.set(0, 20, 100);
 // constrols.dampingFactor = 0.05;
 // controls.enableDamping = true;
 controls.update();
+
+const light = new THREE.PointLight( new THREE.Color(0xffffff).convertSRGBToLinear(), 80, 200);
+light.position.set(10, 20, 10);
+
+// ensure light can cast shadow
+light.castShadow = true;
+light.shadow.mapSize.width = 512;
+light.shadow.mapSize.height = 512;
+light.shadow.camera.near = 0.5;
+light.shadow.camera.far = 500;
+scene.add(light);
 
 
 
@@ -40,7 +55,7 @@ function generateCamera() {
   }
 
 const smallHexGeometry = new THREE.CylinderGeometry( 0.95, 0.95, 1, 6 );
-const smallHexMaterial = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
+const smallHexMaterial = new THREE.MeshBasicMaterial( { color: 0x808080 } );
 
 // Array to hold smaller hexagon meshes
 const smallHexagons = [];
@@ -103,6 +118,23 @@ function createHexagonTile() {
         const smallHexagon = createSmallHexagon(x, y, z);
         smallHexagons.push(smallHexagon);
         hexagonGroup.add(smallHexagon);
+
+        // randomly add stones
+        if (Math.random() > 0.5) {
+            const stoneGeo = stone(0, {x, y, z});
+            const stoneMesh = new THREE.Mesh(stoneGeo, new THREE.MeshBasicMaterial({color: 0x000000}));
+            hexagonGroup.add(stoneMesh);
+        }
+
+        // randomly add trees
+        if (Math.random() > 0.5) {
+            const treeGeos = tree(0, {x, y, z});
+            // loop through treeGeos and add each to hexagonGroup
+            treeGeos.forEach(treeGeo => {
+                const treeMesh = new THREE.Mesh(treeGeo, new THREE.MeshBasicMaterial({color: 0x00ff00}));
+                hexagonGroup.add(treeMesh);
+            })
+        }
     }
 
     return hexagonGroup;
@@ -119,6 +151,73 @@ camera.position.z = 10;
 
 largerHexagon.rotation.x += 5;
 largerHexagon.rotation.y += 5;
+
+function stone(height, position) {
+    const px = Math.random() * 0.4;
+    const pz = Math.random() * 0.4;
+
+    const geo = new THREE.SphereGeometry(Math.random() * 0.3 + 0.1, 7, 7);
+    geo.translate(position.x + px, height + 0.5, position.y + pz);
+
+    return geo;
+}
+
+function tree (height, position) {
+    const treeHeight = Math.random() * 0.7 + 0.25;
+    
+    // pyramid for tree top
+    const geo = new THREE.CylinderGeometry(0, 1.5, treeHeight, 3);
+    geo.translate(position.x, height + treeHeight * 0 + 1, position.y);
+
+    const geo2 = new THREE.CylinderGeometry(0, 1.15, treeHeight, 3);
+    geo2.translate(position.x, height + treeHeight * 0.6 + 1, position.y);
+
+    const geo3 = new THREE.CylinderGeometry(0, 0.8, treeHeight, 3);
+    geo3.translate(position.x, height + treeHeight * 1.25 + 1, position.y);
+
+    // use mergeBufferGeometries to combine geometries into one
+    return [geo, geo2, geo3]
+}
+
+function clouds() {
+    let geo = new THREE.SphereGeometry(0, 0, 0); 
+    // let count = Math.floor(Math.pow(Math.random(), 0.45) * 4);
+    let count = 3;
+  
+    for(let i = 0; i < count; i++) {
+      const puff1 = new THREE.SphereGeometry(1.2, 7, 7);
+      const puff2 = new THREE.SphereGeometry(1.5, 7, 7);
+      const puff3 = new THREE.SphereGeometry(0.9, 7, 7);
+     
+      puff1.translate(-1.85, Math.random() * 0.3, 0);
+      puff2.translate(0,     Math.random() * 0.3, 0);
+      puff3.translate(1.85,  Math.random() * 0.3, 0);
+
+      // translate each puff by   Math.random() * 20 - 10, 
+      // Math.random() * 7 + 7, 
+      // Math.random() * 20 - 10 for x, y, z respectively
+      puff1.translate(Math.random() * 20 - 10, Math.random() * 7 + 7, Math.random() * 20 - 10);
+      puff2.translate(Math.random() * 20 - 10, Math.random() * 7 + 7, Math.random() * 20 - 10);
+      puff3.translate(Math.random() * 20 - 10, Math.random() * 7 + 7, Math.random() * 20 - 10);
+    
+      // then rotate each puff by Math.random() * Math.PI * 2 for y
+      puff1.rotateY(Math.random() * Math.PI * 2);
+      puff2.rotateY(Math.random() * Math.PI * 2);
+      puff3.rotateY(Math.random() * Math.PI * 2);
+
+      return [puff1, puff2, puff3];
+    }
+}
+
+// add clouds to scene
+const cloudGroup = new THREE.Group();
+const cloudGeos = clouds();
+cloudGeos.forEach(cloudGeo => {
+    // make color of cloud white
+    const cloudMesh = new THREE.Mesh(cloudGeo, new THREE.MeshBasicMaterial({color: 0x000}));
+    cloudGroup.add(cloudMesh);
+})
+
 
 function animate() {
 	requestAnimationFrame( animate );
