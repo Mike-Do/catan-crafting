@@ -1,5 +1,9 @@
 import * as THREE from 'three';
+import GUI from 'lil-gui';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+const gui = new GUI();
+gui.add( document, 'title' );
 
 const scene = new THREE.Scene();
 // const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
@@ -9,7 +13,7 @@ generateCamera();
 
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize( window.innerWidth, window.innerHeight );
-renderer.setClearColor(0xF5F5DC); // Set background color to beige
+// renderer.setClearColor(0xF5F5DC); // Set background color to beige
 // add shadow support
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
@@ -21,6 +25,36 @@ camera.position.set(0, 20, 100);
 // constrols.dampingFactor = 0.05;
 // controls.enableDamping = true;
 controls.update();
+
+// add skybox called "catan_skybox.jpeg" sample the texture on the inside of the cube to make skybox using direction vectors
+const skyboxGeo = new THREE.BoxGeometry(1000, 1000, 1000);
+const skyboxTexture = new THREE.TextureLoader().load('./assets/catan_skybox.jpeg');
+
+const skyboxMaterial = new THREE.MeshBasicMaterial({
+    map: skyboxTexture,
+    side: THREE.BackSide
+});
+
+const skybox = new THREE.Mesh(skyboxGeo, skyboxMaterial);
+scene.add(skybox);
+
+// add skybox using cube mapping, have files nx, ny, nz, px, py, pz
+// const loader = new THREE.CubeTextureLoader();
+// const texture = loader.load([
+//     './assets/px.png',
+//     './assets/nx.png',
+//     './assets/py.png',
+//     './assets/ny.png',
+//     './assets/pz.png',
+//     './assets/nz.png',
+// ]);
+
+// scene.background = texture;
+
+
+
+
+
 
 const light = new THREE.PointLight( new THREE.Color(0xffffff).convertSRGBToLinear(), 80, 200);
 light.position.set(10, 20, 10);
