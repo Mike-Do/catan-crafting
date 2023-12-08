@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import GUI from 'lil-gui';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { mergeBufferGeometries } from 'https://cdn.skypack.dev/three-stdlib@2.8.5/utils/BufferGeometryUtils';
 
 // GUI
 const gui = new GUI();
@@ -52,11 +53,6 @@ const texture = loader.load([
 
 scene.background = texture;
 
-
-
-
-
-
 const light = new THREE.PointLight( new THREE.Color(0xffffff).convertSRGBToLinear(), 80, 200);
 light.position.set(10, 20, 10);
 
@@ -67,8 +63,6 @@ light.shadow.mapSize.height = 512;
 light.shadow.camera.near = 0.5;
 light.shadow.camera.far = 500;
 scene.add(light);
-
-
 
 function generateCamera() {
     let fieldOfView = 75;
@@ -89,98 +83,111 @@ function generateCamera() {
     scene.add(camera);
   }
 
-const smallHexGeometry = new THREE.CylinderGeometry( 0.95, 0.95, 1, 6 );
-const smallHexMaterial = new THREE.MeshBasicMaterial( { color: 0x808080 } );
+// HEX GEOMETRY V1
+// let mat = new MeshPhysicalMaterial({
+//     // envMap: envmap,
+//     // envMapIntensity: 0.135,
+//     flatShading: true,
+//     map
+// });
+
+// Load stone texture
+// const texture_loader = new THREE.TextureLoader();
+// let textures = {
+//     stone: texture_loader.load('./assets/stone.png')
+// };
+
+// geometry for one small hexagon
+const smallHexGeometry = new THREE.CylinderGeometry(0.99, 0.99, 1, 6, 1, false);
+
+// geometry for small hexagon with stone texture
+let stoneGeo = new THREE.BoxGeometry(0, 0, 0);
+stoneGeo = mergeBufferGeometries([smallHexGeometry, stoneGeo]);
 
 // Array to hold smaller hexagon meshes
 const smallHexagons = [];
 
+// FUNCTIONS FOR GENERATING THE BOARD (7 HEXAGONS)
 // Function to create a single small hexagon
-function createSmallHexagon(x, y, z) {
-    const smallHexagonMesh = new THREE.Mesh(smallHexGeometry, smallHexMaterial);
+function createSmallHexagon(x, y, z, mat, geo) {
+    const smallHexagonMesh = new THREE.Mesh(geo, mat);
     smallHexagonMesh.position.set(x, y, z);
+    smallHexagonMesh.castShadow = true; //default is false
+    smallHexagonMesh.receiveShadow = true; //default
     return smallHexagonMesh;
 }
 
 // Function to create the larger hexagon tile
-function createHexagonTile() {
+function createHexagonTile(mat, geo) {
     const hexagonGroup = new THREE.Group();
 
     // Define positions for smaller hexagons forming the larger hexagon
     const positions = [
-        // [0, 0, 0],
-        // [1, 0, 0],
-        // [2, 0, 0],
-        // [0, 0, 1],
-        // [1, 0, 1],
-        // [2, 0, 1],
-        // [0, 0, 2],
-        // [1, 0, 2],
-        // [2, 0, 2]
-		// [0, 0, 0],
-		// [-1, 0, 0],
-		// [-2, 0, 0],
-
-		// [-0.5, 0, -1.5],
-		// [-0.5, 0, 1.5]
-
-		// GOOD NUMBERS
-		// [0, 0, 0],
-		// [1.5, 0, -0.866],
-		// [-1.5, 0, -0.866],
-		// [-3, 0, 0],
-		// [-1.5, 0, 0.866],
-		// [1.5, 0, 0.866],
-		// [3, 0, 0]
-
-		//
 		[-Math.sqrt(3), 0, 0],
 		[0, 0, 0],
 		[Math.sqrt(3)/2, 0, 1.5],
 		[-Math.sqrt(3)/2, 0, 1.5],
 		[Math.sqrt(3), 0, 0],
 		[Math.sqrt(3)/2, 0, -1.5],
-		[-Math.sqrt(3)/2, 0, -1.5]
-
-		// [-2, 0, -3],
-		// [2, 0, -3],
-
+        [-Math.sqrt(3) / 2, 0, -1.5]
     ];
 
     // Create smaller hexagons at specified positions
     for (let i = 0; i < positions.length; i++) {
         const [x, y, z] = positions[i];
-        const smallHexagon = createSmallHexagon(x, y, z);
+        const smallHexagon = createSmallHexagon(x, y, z, mat, geo);
         smallHexagons.push(smallHexagon);
         hexagonGroup.add(smallHexagon);
 
-        // randomly add stones
-        if (Math.random() > 0.5) {
-            const stoneGeo = stone(0, {x, y, z});
-            const stoneMesh = new THREE.Mesh(stoneGeo, new THREE.MeshBasicMaterial({color: 0x000000}));
-            hexagonGroup.add(stoneMesh);
-        }
+        // // randomly add stones
+        // if (Math.random() > 0.5) {
+        //     const stoneGeo = stone(0, {x, y, z});
+        //     const stoneMesh = new THREE.Mesh(stoneGeo, new THREE.MeshBasicMaterial({color: 0x000000}));
+        //     hexagonGroup.add(stoneMesh);
+        // }
 
-        // randomly add trees
-        if (Math.random() > 0.5) {
-            const treeGeos = tree(0, {x, y, z});
-            // loop through treeGeos and add each to hexagonGroup
-            treeGeos.forEach(treeGeo => {
-                const treeMesh = new THREE.Mesh(treeGeo, new THREE.MeshBasicMaterial({color: 0x00ff00}));
-                hexagonGroup.add(treeMesh);
-            })
-        }
+        // // randomly add trees
+        // if (Math.random() > 0.5) {
+        //     const treeGeos = tree(0, {x, y, z});
+        //     // loop through treeGeos and add each to hexagonGroup
+        //     treeGeos.forEach(treeGeo => {
+        //         const treeMesh = new THREE.Mesh(treeGeo, new THREE.MeshBasicMaterial({color: 0x00ff00}));
+        //         hexagonGroup.add(treeMesh);
+        //     })
+        // }
     }
 
     return hexagonGroup;
 }
 
-// Add the larger hexagon tile to the scene
-const largerHexagon = createHexagonTile();
-scene.add(largerHexagon);
+// Load textures asynchronously on the board
+(async function () {
+    let textures = {
+        stone: await new THREE.TextureLoader().loadAsync('./assets/stone.png')
+    };
 
-// const cube = new THREE.Mesh( hexGeomgetry, material );
-// scene.add( cube );
+    // let stoneMesh = hexMesh(stoneGeo, textures.stone);
+    const smallHexMaterial = new THREE.MeshStandardMaterial({ map: textures.stone });
+
+    // Add the larger hexagon tile to the scene
+    const largerHexagon = createHexagonTile(smallHexMaterial, stoneGeo);
+    scene.add(largerHexagon);
+})();
+
+// function hexMesh(geo, map) {
+//     let mat = new MeshPhysicalMaterial({
+//         // envMap: envmap,
+//         // envMapIntensity: 0.135,
+//         flatShading: true,
+//         map
+//     });
+
+//     let mesh = new Mesh(geo, mat);
+//     mesh.castShadow = true; //default is false
+//     mesh.receiveShadow = true; //default
+
+//     return mesh;
+// }
 
 camera.position.z = 10;
 
