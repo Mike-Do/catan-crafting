@@ -96,15 +96,25 @@ rainMaterial = new THREE.PointsMaterial({
 rain = new THREE.Points(rainGeo, rainMaterial);
 // scene.add(rain);
 
-const light = new THREE.PointLight( new THREE.Color(0xffffff).convertSRGBToLinear(), 80, 200);
-light.position.set(10, 20, 10);
+// const light = new THREE.PointLight( new THREE.Color(0xffffff).convertSRGBToLinear(), 80, 200);
+// light.position.set(10, 20, 10);
 
-// ensure light can cast shadow
+// // ensure light can cast shadow
+// light.castShadow = true;
+// light.shadow.mapSize.width = 512;
+// light.shadow.mapSize.height = 512;
+// light.shadow.camera.near = 0.5;
+// light.shadow.camera.far = 500;
+
+// add bright directional light
+const light = new THREE.DirectionalLight(0xffffff, 1);
+light.position.set(0, 20, 10);
 light.castShadow = true;
 light.shadow.mapSize.width = 512;
 light.shadow.mapSize.height = 512;
 light.shadow.camera.near = 0.5;
 light.shadow.camera.far = 500;
+
 scene.add(light);
 
 function generateCamera() {
@@ -248,7 +258,10 @@ function createHexagonTile() {
     let textures = {
         stone: await new THREE.TextureLoader().loadAsync('./assets/stone.png'),
         grass: await new THREE.TextureLoader().loadAsync('./assets/grass.png'),
-        mountainGrass: await new THREE.TextureLoader().loadAsync('./assets/mountain_grass.png')
+        mountainGrass: await new THREE.TextureLoader().loadAsync('./assets/mountain_grass.png'),
+        water: await new THREE.TextureLoader().loadAsync('./assets/water.jpg'),
+        riverlandGrass: await new THREE.TextureLoader().loadAsync('./assets/riverland_grass.png'),
+        riverlandStone: await new THREE.TextureLoader().loadAsync('./assets/riverland_stone.png')
     };
 
     // let stoneMesh = hexMesh(stoneGeo, textures.stone);
