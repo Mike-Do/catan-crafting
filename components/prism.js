@@ -9,11 +9,11 @@ let MAX_HEIGHT = 2; // adjust this for different types of terrains
 // const STONE_HEIGHT = MAX_HEIGHT * 0.8;
 // const GRASS_HEIGHT = MAX_HEIGHT * 0.5;
 
-let stoneGeo = new THREE.BoxGeometry(0,0,0);
-let grassGeo = new THREE.BoxGeometry(0,0,0);
-let waterGeo = new THREE.BoxGeometry(0,0,0);
-let dirtGeo = new THREE.BoxGeometry(0,0,0);
-let hayGeo = new THREE.BoxGeometry(0,0,0);
+let currGeo = new THREE.BoxGeometry(0,0,0);
+// let grassGeo = new THREE.BoxGeometry(0,0,0);
+// let waterGeo = new THREE.BoxGeometry(0,0,0);
+// let dirtGeo = new THREE.BoxGeometry(0,0,0);
+// let hayGeo = new THREE.BoxGeometry(0,0,0);
 
 let currTextures;
 let currTileType;
@@ -24,26 +24,22 @@ let currTileType;
 
 // helper function that returns height randomly generated with perlin noise
 function getPerlinNoise(center, tileType) {
-    let parameter1;
+    let parameter1 = 0.3;
     let maxHeight;
-    let parameter2;
+    let parameter2 = 1.5;
 
     if (tileType == "Grassland") {
-        parameter1 = 0.3;
-        parameter2 = 1.5;
         maxHeight = 1.5;
     } else if (tileType == "Mountain") {
-        parameter1 = 0.3;
-        parameter2 = 1.5;
         maxHeight = 5;
     } else if (tileType == "Riverland") {
-        parameter1 = 0.3;
-        parameter2 = 1.5;
         maxHeight = 1.5;
     } else if (tileType == "Farmland") {
-        parameter1 = 0.3;
-        parameter2 = 1.5;
         maxHeight = 1.5;
+    } else if (tileType == "Clayland") {
+        parameter1 = 0.2;
+        parameter2 = 1.5;
+        maxHeight = 3;
     }
     // add other tile types
     let noise = (simplex.noise2D(center[0] * parameter1, center[2] * parameter1) + 1) * 0.5;
@@ -65,13 +61,13 @@ function getMesh(tileType, radius, height) {
         let GRASS_HEIGHT = 0;
         
         if(height > STONE_HEIGHT) {
-            geo = mergeBufferGeometries([geo, stoneGeo]);
+            geo = mergeBufferGeometries([geo, currGeo]);
             material = new THREE.MeshPhysicalMaterial({ 
                 flatShading: true,
                 map: currTextures.stone
             });
         } else if (height > GRASS_HEIGHT) {
-            geo = mergeBufferGeometries([geo, grassGeo]);
+            geo = mergeBufferGeometries([geo, currGeo]);
             material = new THREE.MeshPhysicalMaterial({ 
                 flatShading: true,
                 map: currTextures.grass
@@ -83,13 +79,13 @@ function getMesh(tileType, radius, height) {
         let GRASS_HEIGHT = 0;
 
         if(height > STONE_HEIGHT) {
-            geo = mergeBufferGeometries([geo, stoneGeo]);
+            geo = mergeBufferGeometries([geo, currGeo]);
             material = new THREE.MeshPhysicalMaterial({ 
                 flatShading: true,
                 map: currTextures.stone
             });
         } else if (height > GRASS_HEIGHT) {
-            geo = mergeBufferGeometries([geo, grassGeo]);
+            geo = mergeBufferGeometries([geo, currGeo]);
             material = new THREE.MeshPhysicalMaterial({ 
                 flatShading: true,
                 map: currTextures.mountainGrass
@@ -101,19 +97,19 @@ function getMesh(tileType, radius, height) {
         let WATER_HEIGHT = 0;
 
         if(height > STONE_HEIGHT) {
-            geo = mergeBufferGeometries([geo, stoneGeo]);
+            geo = mergeBufferGeometries([geo, currGeo]);
             material = new THREE.MeshPhysicalMaterial({ 
                 flatShading: true,
                 map: currTextures.riverlandStone
             });
         } else if (height > GRASS_HEIGHT) {
-            geo = mergeBufferGeometries([geo, grassGeo]);
+            geo = mergeBufferGeometries([geo, currGeo]);
             material = new THREE.MeshPhysicalMaterial({ 
                 flatShading: true,
                 map: currTextures.riverlandGrass
             });
         } else if (height > WATER_HEIGHT) {
-            geo = mergeBufferGeometries([geo, waterGeo]);
+            geo = mergeBufferGeometries([geo, currGeo]);
             material = new THREE.MeshPhysicalMaterial({
             color: new THREE.Color("#55aaff").convertSRGBToLinear().multiplyScalar(3),
             ior: 1.4,
@@ -133,22 +129,39 @@ function getMesh(tileType, radius, height) {
         let HAY_HEIGHT = MAX_HEIGHT * 0.3;
 
         if(height > DIRT_HEIGHT && height < GRASS_HEIGHT) {
-            geo = mergeBufferGeometries([geo, dirtGeo]);
+            geo = mergeBufferGeometries([geo, currGeo]);
             material = new THREE.MeshPhysicalMaterial({ 
                 flatShading: true,
                 map: currTextures.dirt
             });
         } else if (height > GRASS_HEIGHT && height < HAY_HEIGHT) {
-            geo = mergeBufferGeometries([geo, grassGeo]);
+            geo = mergeBufferGeometries([geo, currGeo]);
             material = new THREE.MeshPhysicalMaterial({ 
                 flatShading: true,
                 map: currTextures.farmGrass
             });
         } else if (height > HAY_HEIGHT) {
-            geo = mergeBufferGeometries([geo, hayGeo]);
+            geo = mergeBufferGeometries([geo, currGeo]);
             material = new THREE.MeshPhysicalMaterial({ 
                 flatShading: true,
                 map: currTextures.hay
+            });
+        }
+    } else if (tileType == "Clayland") {
+        let CLAY_HEIGHT = MAX_HEIGHT * 0.2;
+        let STONE_HEIGHT = 0;
+
+        if (height > STONE_HEIGHT && height < CLAY_HEIGHT) {
+            geo = mergeBufferGeometries([geo, currGeo]);
+            material = new THREE.MeshPhysicalMaterial({ 
+                flatShading: true,
+                map: currTextures.clayStone
+            });
+        } else if (height >= CLAY_HEIGHT) {
+            geo = mergeBufferGeometries([geo, currGeo]);
+            material = new THREE.MeshPhysicalMaterial({ 
+                flatShading: true,
+                map: currTextures.clay
             });
         }
     }
