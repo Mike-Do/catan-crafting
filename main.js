@@ -234,15 +234,6 @@ function createHexagonTile() {
     return hexagonGroup;
 }
 
-function stone(height, position) {
-    const px = Math.random() * 0.4;
-    const pz = Math.random() * 0.4;
-  
-    const geo = new SphereGeometry(Math.random() * 0.3 + 0.1, 7, 7);
-    geo.translate(position.x + px, height, position.y + pz);
-  
-    return geo;
-}
 // function getGeo(height) { // TODO: take in height and position as parameters (AFTER PERLIN)
 //     // let geo = hexGeometry(height, position); // BRING THIS BACK AFTER PERLIN NOISE
 //     let geo = hexGeometry(height);
