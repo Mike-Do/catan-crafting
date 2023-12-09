@@ -2,20 +2,26 @@ import * as THREE from 'three';
 import GUI from 'lil-gui';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { mergeBufferGeometries } from 'https://cdn.skypack.dev/three-stdlib@2.8.5/utils/BufferGeometryUtils';
+// import SimplexNoise from 'https://cdn.skypack.dev/simplex-noise@3.0.0';
+// import { SimplexNoise } from 'simplex-noise';
+import { getCatan } from './components/catan';
 
 // GUI
 const gui = new GUI();
 gui.add( document, 'title' );
 
+// const simplex = new SimplexNoise();
+
 const scene = new THREE.Scene();
 // const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
 let camera;
 let controls;
+let rain, rainGeo, rainMaterial, rainCount = 10000;
 generateCamera();
 
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize( window.innerWidth, window.innerHeight );
-// renderer.setClearColor(0xF5F5DC); // Set background color to beige
+renderer.setClearColor(0x181716); // Set background color to beige
 // add shadow support
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
@@ -41,17 +47,54 @@ controls.update();
 // scene.add(skybox);
 
 // add skybox using cube mapping, have files nx, ny, nz, px, py, pz
-const loader = new THREE.CubeTextureLoader();
-const texture = loader.load([
-    './assets/px.png',
-    './assets/nx.png',
-    './assets/py.png',
-    './assets/ny.png',
-    './assets/pz.png',
-    './assets/nz.png',
-]);
+// const loader = new THREE.CubeTextureLoader();
+// const texture = loader.load([
+//     './assets/px.png',
+//     './assets/nx.png',
+//     './assets/py.png',
+//     './assets/ny.png',
+//     './assets/pz.png',
+//     './assets/nz.png',
+// ]);
 
-scene.background = texture;
+// scene.background = texture;
+
+
+
+// rainGeo = new THREE.BufferGeometry();
+// const positions = [];
+// for (let i = 0; i < rainCount; i++) {
+//     let rainDrop = new THREE.Vector3(
+//         Math.random() * 400 - 200,
+//         Math.random() * 500 - 250,
+//         Math.random() * 400 - 200
+//     );
+//     rainDrop.velocity = [];
+//     rainDrop.velocity = 0;
+//     rainGeo.vertices.push(rainDrop);
+// }
+rainGeo = new THREE.BufferGeometry();
+const positions = [];
+const velocities = []; // Separate array for velocities
+for (let i = 0; i < rainCount; i++) {
+    positions.push(Math.random() * 400 - 200);
+    positions.push(Math.random() * 500 - 250);
+    positions.push(Math.random() * 400 - 200);
+
+    // Initial velocity
+    velocities.push(0); // Assuming initial velocity is 0
+}
+rainGeo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+rainGeo.setAttribute('velocity', new THREE.Float32BufferAttribute(velocities, 1));
+
+rainMaterial = new THREE.PointsMaterial({
+    color: 0x30B4C9,
+    size: 0.35,
+    transparent: true
+});
+
+rain = new THREE.Points(rainGeo, rainMaterial);
+// scene.add(rain);
 
 const light = new THREE.PointLight( new THREE.Color(0xffffff).convertSRGBToLinear(), 80, 200);
 light.position.set(10, 20, 10);
@@ -98,11 +141,6 @@ function generateCamera() {
 // };
 
 // geometry for one small hexagon
-// function hexGeometry(height, position) {
-//     let geo = new THREE.CylinderGeometry(0.99, 0.99, 1, 6, 1, false);
-//     return geo;
-// }
-
 const smallHexGeometry = new THREE.CylinderGeometry(0.99, 0.99, 1, 6, 1, false);
 
 const STONE_HEIGHT = MAX_HEIGHT * 0.8;
@@ -128,12 +166,16 @@ function hex(height, position) {
         grassGeo = mergeBufferGeometries([geo, grassGeo]);
     }
 }
+// let stoneGeo = new THREE.BoxGeometry(0, 0, 0);
+// let grassGeo = new THREE.BoxGeometry(0, 0, 0);
+// stoneGeo = mergeBufferGeometries([smallHexGeometry, stoneGeo]);
 
 // Array to hold smaller hexagon meshes
 const smallHexagons = [];
 
 // FUNCTIONS FOR GENERATING THE BOARD (7 HEXAGONS)
 // Function to create a single small hexagon
+
 function createSmallHexagon(x, y, z, mat, geo) {
     const smallHexagonMesh = new THREE.Mesh(geo, mat);
     smallHexagonMesh.position.set(x, y, z);
@@ -143,7 +185,7 @@ function createSmallHexagon(x, y, z, mat, geo) {
 }
 
 // Function to create the larger hexagon tile
-function createHexagonTile(mat, geo) {
+function createHexagonTile() {
     const hexagonGroup = new THREE.Group();
 
     // Define positions for smaller hexagons forming the larger hexagon
@@ -160,7 +202,14 @@ function createHexagonTile(mat, geo) {
     // Create smaller hexagons at specified positions
     for (let i = 0; i < positions.length; i++) {
         const [x, y, z] = positions[i];
-        const smallHexagon = createSmallHexagon(x, y, z, mat, geo);
+
+        // const height = simplex.noise2D(0.99, 0.99) * 5;
+
+        // let mat = new THREE.MeshStandardMaterial({ map: textures.stone });
+        // let geo = getGeo(height);
+
+        // add noise to the height of each hexagon
+        const smallHexagon = createSmallHexagon(x, y, z);
         smallHexagons.push(smallHexagon);
         hexagonGroup.add(smallHexagon);
 
@@ -194,18 +243,39 @@ function stone(height, position) {
   
     return geo;
 }
+// function getGeo(height) { // TODO: take in height and position as parameters (AFTER PERLIN)
+//     // let geo = hexGeometry(height, position); // BRING THIS BACK AFTER PERLIN NOISE
+//     let geo = hexGeometry(height);
+  
+//     if(height > STONE_HEIGHT) {
+//       stoneGeo = mergeBufferGeometries([geo, stoneGeo]);
+  
+//       if(Math.random() > 0.8) {
+//         stoneGeo = mergeBufferGeometries([stoneGeo, stone(height, position)]);
+//       }
+//       return stoneGeo;
+
+//     } else if(height > GRASS_HEIGHT) {
+//       grassGeo = mergeBufferGeometries([geo, grassGeo]);
+//       return grassGeo;
+//     }
+
+//     return geo;
+// }
 
 // Load textures asynchronously on the board
 (async function () {
     let textures = {
-        stone: await new THREE.TextureLoader().loadAsync('./assets/stone.png')
+        stone: await new THREE.TextureLoader().loadAsync('./assets/stone.png'),
+        grass: await new THREE.TextureLoader().loadAsync('./assets/grass.jpg')
     };
 
     // let stoneMesh = hexMesh(stoneGeo, textures.stone);
-    const smallHexMaterial = new THREE.MeshStandardMaterial({ map: textures.stone });
+    // const smallHexMaterial = new THREE.MeshStandardMaterial({ map: textures.stone });
 
     // Add the larger hexagon tile to the scene
-    const largerHexagon = createHexagonTile(smallHexMaterial, stoneGeo);
+    // stoneGeo = mergeBufferGeometries([smallHexGeometry, stoneGeo]);
+    const largerHexagon = getCatan(6, 4);
     scene.add(largerHexagon);
 })();
 // function hexMesh(geo, map) {
@@ -301,6 +371,39 @@ function animate() {
 	// largerHexagon.rotation.x += 0.009;
     // largerHexagon.rotation.y += 0.009;
     controls.update();
+
+    // Update positions and velocities
+    // let positions = rainGeo.attributes.position;
+    // let velocities = rainGeo.attributes.velocity;
+    // let count = positions.count;
+
+    // for (let i = 0; i < count; i++) {
+    //     // Update velocity
+    //     // let velocity = velocities.getX(i) - 0.1 + Math.random() * 0.1;
+    //     // make velocity slow
+    //     let velocity = velocities.getX(i) - 0.01 + Math.random() * 0.01;
+
+    //     // after velocity reaches a certain point, reset it to 0
+    //     if (velocity > 0.25) {
+    //         velocity = 0;
+    //     }
+
+    //     // reset velocity periodically
+    //     velocities.setX(i, velocity);
+
+    //     // Update position
+    //     let y = positions.getY(i) + velocity;
+    //     if (y < -200) {
+    //         y = 200;
+    //         velocity = 0;
+    //     }
+    //     positions.setY(i, y);
+    // }
+
+    // positions.needsUpdate = true;
+    // rain.rotation.y += 0.002;
+    // velocities.needsUpdate = true;
+
 
 	renderer.render( scene, camera );
 }
