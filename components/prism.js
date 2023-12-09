@@ -3,7 +3,7 @@ import SimplexNoise from 'https://cdn.skypack.dev/simplex-noise@3.0.0';
 import { mergeBufferGeometries } from 'https://cdn.skypack.dev/three-stdlib@2.8.5/utils/BufferGeometryUtils';
 
 const simplex = new SimplexNoise();
-const MAX_HEIGHT = 2; // adjust this for different types of terrains
+let MAX_HEIGHT = 2; // adjust this for different types of terrains
 
 // define height for textures
 const STONE_HEIGHT = MAX_HEIGHT * 0.8;
@@ -13,65 +13,110 @@ let stoneGeo = new THREE.BoxGeometry(0,0,0);
 let grassGeo = new THREE.BoxGeometry(0,0,0);
 
 let currTextures;
+let currTileType;
 
-function stone(height) {
-    const px = Math.random() * 0.4;
-    const pz = Math.random() * 0.4;
+// Tile Type: 
+// 1. Perlin noise changes
+// 2. Textures used change
 
-    const geo = new THREE.SphereGeometry(Math.random() * 0.3 + 0.1, 7, 7);
-    // geo.translate(position.x + px, height + 0.5, position.y + pz);
+// helper function that returns height randomly generated with perlin noise
+function getPerlinNoise(center, tileType) {
+    let parameter1;
+    let maxHeight;
+    let parameter2;
 
-    return geo;
+    if (tileType == "Grassland") {
+        parameter1 = 0.3;
+        parameter2 = 1.5;
+        maxHeight = 2;
+    } else if (tileType == "Mountain") {
+        parameter1 = 0.8;
+        parameter2 = 7;
+        maxHeight = 5;
+    }
+    // add other tile types
+    let noise = (simplex.noise2D(center[0] * parameter1, center[2] * parameter1) + 1) * 0.5;
+    noise = Math.pow(noise, parameter2);
+    const height = noise * maxHeight;
+
+    return height;
 }
 
-function tree (height) {
-    const treeHeight = Math.random() * 0.7 + 0.25;
+// helper function that returns a mesh based on the tile type
+function getMesh(tileType, radius, height) {
+    // initialize geo and material
+    let geo = new THREE.CylinderGeometry(radius * 0.95, radius * 0.95, height, 3);
+    let material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+
+    if (tileType == "Grassland") {
+        geo = mergeBufferGeometries([geo, grassGeo]);
+        material = new THREE.MeshPhysicalMaterial({ 
+            flatShading: true,
+            map: currTextures.grass
+        });
+    } else if (tileType == "Mountain") {
+        geo = mergeBufferGeometries([geo, stoneGeo]);
+        material = new THREE.MeshPhysicalMaterial({ 
+            flatShading: true,
+            map: currTextures.stone
+        });
+    }
+    // add other tile types
     
-    // pyramid for tree top
-    const geo = new THREE.CylinderGeometry(0, 1.5, treeHeight, 3);
-    // geo.translate(position.x, height + treeHeight * 0 + 1, position.y);
+    // if(height > STONE_HEIGHT) {
+    //     geo = mergeBufferGeometries([geo, stoneGeo]);
+    //     material = new THREE.MeshPhysicalMaterial({ 
+    //         flatShading: true,
+    //         map: currTextures.stone
+    //     });
+    // } else if (height > GRASS_HEIGHT) {
+    //     geo = mergeBufferGeometries([geo, grassGeo]);
+    //     material = new THREE.MeshPhysicalMaterial({ 
+    //         flatShading: true,
+    //         map: currTextures.grass
+    //     });
+    // }
 
-    const geo2 = new THREE.CylinderGeometry(0, 1.15, treeHeight, 3);
-    // geo2.translate(position.x, height + treeHeight * 0.6 + 1, position.y);
-
-    const geo3 = new THREE.CylinderGeometry(0, 0.8, treeHeight, 3);
-    // geo3.translate(position.x, height + treeHeight * 1.25 + 1, position.y);
-
-    // use mergeBufferGeometries to combine geometries into one
-    return [geo, geo2, geo3]
+    const mesh = new THREE.Mesh(geo, material);
+    return mesh;
 }
 
-export function getPrisms(center, radius, level, yFlip, textures) {
+export function getPrisms(center, radius, level, yFlip, textures, tileType) {
     if (textures != undefined) {
         currTextures = textures;
     }
 
+    if (tileType != undefined) {
+        currTileType = tileType;
+    }
+
     if (level === 0) {
         // add simplex noise
-        let noise = (simplex.noise2D(center[0] * 0.3, center[2] * 0.3) + 1) * 0.5;
-        noise = Math.pow(noise, 1.5);
-        const height = noise * MAX_HEIGHT;
+        let height = getPerlinNoise(center, currTileType);
+        
         center[1] += height / 2;
-        let geo = new THREE.CylinderGeometry(radius * 0.95, radius * 0.95, height, 3);
-        let material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+
+        // let geo = new THREE.CylinderGeometry(radius * 0.95, radius * 0.95, height, 3);
+        // let material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
 
 
-        if(height > STONE_HEIGHT) {
-            geo = mergeBufferGeometries([geo, stoneGeo]);
-            material = new THREE.MeshPhysicalMaterial({ 
-                flatShading: true,
-                map: currTextures.stone
-            });
-        } else if(height > GRASS_HEIGHT) {
-            geo = mergeBufferGeometries([geo, grassGeo]);
-            material = new THREE.MeshPhysicalMaterial({ 
-                flatShading: true,
-                map: currTextures.grass
-            });
-        }
+        // if(height > STONE_HEIGHT) {
+        //     geo = mergeBufferGeometries([geo, stoneGeo]);
+        //     material = new THREE.MeshPhysicalMaterial({ 
+        //         flatShading: true,
+        //         map: currTextures.stone
+        //     });
+        // } else if (height > GRASS_HEIGHT) {
+        //     geo = mergeBufferGeometries([geo, grassGeo]);
+        //     material = new THREE.MeshPhysicalMaterial({ 
+        //         flatShading: true,
+        //         map: currTextures.grass
+        //     });
+        // }
           
         
-        const mesh = new THREE.Mesh(geo, material);
+        // const mesh = new THREE.Mesh(geo, material);
+        const mesh = getMesh(currTileType, radius, height);
         mesh.position.set(...center);
         mesh.rotation.set(0, yFlip ? Math.PI : 0, 0);
         return [mesh];
