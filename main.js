@@ -247,7 +247,8 @@ function createHexagonTile() {
 (async function () {
     let textures = {
         stone: await new THREE.TextureLoader().loadAsync('./assets/stone.png'),
-        grass: await new THREE.TextureLoader().loadAsync('./assets/grass.jpg')
+        grass: await new THREE.TextureLoader().loadAsync('./assets/grass.png'),
+        mountainGrass: await new THREE.TextureLoader().loadAsync('./assets/mountain_grass.png')
     };
 
     // let stoneMesh = hexMesh(stoneGeo, textures.stone);
