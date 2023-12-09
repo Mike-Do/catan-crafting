@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { getTile } from './tile';
 
-export function getCatan(radius, level) {
+export function getCatan(radius, level, textures) {
     const catanGroup = new THREE.Group();
     const tiles = [
         { x: 0, y: 0, z: 0 },
@@ -14,7 +14,7 @@ export function getCatan(radius, level) {
     ];
 
     tiles.forEach(tile => {
-        const tileMesh = getTile([tile.x * radius * 1.2, tile.y * radius, tile.z * radius * 1.2], radius, level);
+        const tileMesh = getTile([tile.x * radius * 1.2, tile.y * radius, tile.z * radius * 1.2], radius, level, textures);
         // tileMesh.position.set(tile.x, tile.y, tile.z);
         catanGroup.add(...tileMesh);
     });
