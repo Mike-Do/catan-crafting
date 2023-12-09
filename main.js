@@ -46,20 +46,18 @@ controls.update();
 // const skybox = new THREE.Mesh(skyboxGeo, skyboxMaterial);
 // scene.add(skybox);
 
-// add skybox using cube mapping, have files nx, ny, nz, px, py, pz
+// add skybox using cube mapping, have files back, front, top, bottom, left, right located in skybox/assets
 // const loader = new THREE.CubeTextureLoader();
 // const texture = loader.load([
-//     './assets/px.png',
-//     './assets/nx.png',
-//     './assets/py.png',
-//     './assets/ny.png',
-//     './assets/pz.png',
-//     './assets/nz.png',
+//     './assets/skybox/right.jpg',
+//     './assets/skybox/left.jpg',
+//     './assets/skybox/top.jpg',
+//     './assets/skybox/bottom.jpg',
+//     './assets/skybox/front.jpg',
+//     './assets/skybox/back.jpg'
 // ]);
-
+    
 // scene.background = texture;
-
-
 
 // rainGeo = new THREE.BufferGeometry();
 // const positions = [];
