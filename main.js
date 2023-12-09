@@ -46,20 +46,18 @@ controls.update();
 // const skybox = new THREE.Mesh(skyboxGeo, skyboxMaterial);
 // scene.add(skybox);
 
-// add skybox using cube mapping, have files nx, ny, nz, px, py, pz
+// add skybox using cube mapping, have files back, front, top, bottom, left, right located in skybox/assets
 // const loader = new THREE.CubeTextureLoader();
 // const texture = loader.load([
-//     './assets/px.png',
-//     './assets/nx.png',
-//     './assets/py.png',
-//     './assets/ny.png',
-//     './assets/pz.png',
-//     './assets/nz.png',
+//     './assets/skybox/right.jpg',
+//     './assets/skybox/left.jpg',
+//     './assets/skybox/top.jpg',
+//     './assets/skybox/bottom.jpg',
+//     './assets/skybox/front.jpg',
+//     './assets/skybox/back.jpg'
 // ]);
-
+    
 // scene.background = texture;
-
-
 
 // rainGeo = new THREE.BufferGeometry();
 // const positions = [];
@@ -96,15 +94,25 @@ rainMaterial = new THREE.PointsMaterial({
 rain = new THREE.Points(rainGeo, rainMaterial);
 // scene.add(rain);
 
-const light = new THREE.PointLight( new THREE.Color(0xffffff).convertSRGBToLinear(), 80, 200);
-light.position.set(10, 20, 10);
+// const light = new THREE.PointLight( new THREE.Color(0xffffff).convertSRGBToLinear(), 80, 200);
+// light.position.set(10, 20, 10);
 
-// ensure light can cast shadow
+// // ensure light can cast shadow
+// light.castShadow = true;
+// light.shadow.mapSize.width = 512;
+// light.shadow.mapSize.height = 512;
+// light.shadow.camera.near = 0.5;
+// light.shadow.camera.far = 500;
+
+// add bright directional light
+const light = new THREE.DirectionalLight(0xffffff, 1);
+light.position.set(0, 20, 10);
 light.castShadow = true;
 light.shadow.mapSize.width = 512;
 light.shadow.mapSize.height = 512;
 light.shadow.camera.near = 0.5;
 light.shadow.camera.far = 500;
+
 scene.add(light);
 
 function generateCamera() {
@@ -258,7 +266,16 @@ function createHexagonTile() {
 (async function () {
     let textures = {
         stone: await new THREE.TextureLoader().loadAsync('./assets/stone.png'),
-        grass: await new THREE.TextureLoader().loadAsync('./assets/grass.jpg')
+        grass: await new THREE.TextureLoader().loadAsync('./assets/grass.png'),
+        mountainGrass: await new THREE.TextureLoader().loadAsync('./assets/mountain_grass.png'),
+        water: await new THREE.TextureLoader().loadAsync('./assets/water.jpg'),
+        riverlandGrass: await new THREE.TextureLoader().loadAsync('./assets/riverland_grass.png'),
+        riverlandStone: await new THREE.TextureLoader().loadAsync('./assets/riverland_stone.png'),
+        dirt: await new THREE.TextureLoader().loadAsync('./assets/farm_dirt.png'),
+        farmGrass: await new THREE.TextureLoader().loadAsync('./assets/farm_grass.png'),
+        hay: await new THREE.TextureLoader().loadAsync('./assets/hay.png'),
+        clay: await new THREE.TextureLoader().loadAsync('./assets/clay.png'),
+        clayStone: await new THREE.TextureLoader().loadAsync('./assets/clay_stone.png')
     };
 
     // let stoneMesh = hexMesh(stoneGeo, textures.stone);
@@ -266,7 +283,7 @@ function createHexagonTile() {
 
     // Add the larger hexagon tile to the scene
     // stoneGeo = mergeBufferGeometries([smallHexGeometry, stoneGeo]);
-    const largerHexagon = getCatan(6, 4);
+    const largerHexagon = getCatan(6, 4, textures);
     scene.add(largerHexagon);
 })();
 // function hexMesh(geo, map) {
@@ -289,32 +306,32 @@ camera.position.z = 10;
 // largerHexagon.rotation.x += 5;
 // largerHexagon.rotation.y += 5;
 
-function stone(height, position) {
-    const px = Math.random() * 0.4;
-    const pz = Math.random() * 0.4;
+// function stone(height, position) {
+//     const px = Math.random() * 0.4;
+//     const pz = Math.random() * 0.4;
 
-    const geo = new THREE.SphereGeometry(Math.random() * 0.3 + 0.1, 7, 7);
-    geo.translate(position.x + px, height + 0.5, position.y + pz);
+//     const geo = new THREE.SphereGeometry(Math.random() * 0.3 + 0.1, 7, 7);
+//     geo.translate(position.x + px, height + 0.5, position.y + pz);
 
-    return geo;
-}
+//     return geo;
+// }
 
-function tree (height, position) {
-    const treeHeight = Math.random() * 0.7 + 0.25;
+// function tree (height, position) {
+//     const treeHeight = Math.random() * 0.7 + 0.25;
     
-    // pyramid for tree top
-    const geo = new THREE.CylinderGeometry(0, 1.5, treeHeight, 3);
-    geo.translate(position.x, height + treeHeight * 0 + 1, position.y);
+//     // pyramid for tree top
+//     const geo = new THREE.CylinderGeometry(0, 1.5, treeHeight, 3);
+//     geo.translate(position.x, height + treeHeight * 0 + 1, position.y);
 
-    const geo2 = new THREE.CylinderGeometry(0, 1.15, treeHeight, 3);
-    geo2.translate(position.x, height + treeHeight * 0.6 + 1, position.y);
+//     const geo2 = new THREE.CylinderGeometry(0, 1.15, treeHeight, 3);
+//     geo2.translate(position.x, height + treeHeight * 0.6 + 1, position.y);
 
-    const geo3 = new THREE.CylinderGeometry(0, 0.8, treeHeight, 3);
-    geo3.translate(position.x, height + treeHeight * 1.25 + 1, position.y);
+//     const geo3 = new THREE.CylinderGeometry(0, 0.8, treeHeight, 3);
+//     geo3.translate(position.x, height + treeHeight * 1.25 + 1, position.y);
 
-    // use mergeBufferGeometries to combine geometries into one
-    return [geo, geo2, geo3]
-}
+//     // use mergeBufferGeometries to combine geometries into one
+//     return [geo, geo2, geo3]
+// }
 
 function clouds() {
     let geo = new THREE.SphereGeometry(0, 0, 0); 
@@ -354,6 +371,22 @@ cloudGeos.forEach(cloudGeo => {
     const cloudMesh = new THREE.Mesh(cloudGeo, new THREE.MeshBasicMaterial({color: 0x000}));
     cloudGroup.add(cloudMesh);
 })
+
+// add WASD controls
+document.addEventListener('keydown', onDocumentKeyDown, false);
+
+function onDocumentKeyDown(event) {
+    const keyCode = event.which;
+    if (keyCode == 87) {
+        camera.position.z -= 1;
+    } else if (keyCode == 83) {
+        camera.position.z += 1;
+    } else if (keyCode == 65) {
+        camera.position.x -= 1;
+    } else if (keyCode == 68) {
+        camera.position.x += 1;
+    }
+}
 
 // called every frame; core function that brings everything together
 function animate() {
