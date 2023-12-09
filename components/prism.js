@@ -12,6 +12,8 @@ let MAX_HEIGHT = 2; // adjust this for different types of terrains
 let stoneGeo = new THREE.BoxGeometry(0,0,0);
 let grassGeo = new THREE.BoxGeometry(0,0,0);
 let waterGeo = new THREE.BoxGeometry(0,0,0);
+let dirtGeo = new THREE.BoxGeometry(0,0,0);
+let hayGeo = new THREE.BoxGeometry(0,0,0);
 
 let currTextures;
 let currTileType;
@@ -35,6 +37,10 @@ function getPerlinNoise(center, tileType) {
         parameter2 = 1.5;
         maxHeight = 5;
     } else if (tileType == "Riverland") {
+        parameter1 = 0.3;
+        parameter2 = 1.5;
+        maxHeight = 1.5;
+    } else if (tileType == "Farmland") {
         parameter1 = 0.3;
         parameter2 = 1.5;
         maxHeight = 1.5;
@@ -121,6 +127,30 @@ function getMesh(tileType, radius, height) {
             });
         }
         // geo = new THREE.CylinderGeometry(17, 17, MAX_HEIGHT * 0.2, 50);
+    } else if (tileType == "Farmland") {
+        let DIRT_HEIGHT = 0;
+        let GRASS_HEIGHT = MAX_HEIGHT * 0.2;
+        let HAY_HEIGHT = MAX_HEIGHT * 0.3;
+
+        if(height > DIRT_HEIGHT && height < GRASS_HEIGHT) {
+            geo = mergeBufferGeometries([geo, dirtGeo]);
+            material = new THREE.MeshPhysicalMaterial({ 
+                flatShading: true,
+                map: currTextures.dirt
+            });
+        } else if (height > GRASS_HEIGHT && height < HAY_HEIGHT) {
+            geo = mergeBufferGeometries([geo, grassGeo]);
+            material = new THREE.MeshPhysicalMaterial({ 
+                flatShading: true,
+                map: currTextures.farmGrass
+            });
+        } else if (height > HAY_HEIGHT) {
+            geo = mergeBufferGeometries([geo, hayGeo]);
+            material = new THREE.MeshPhysicalMaterial({ 
+                flatShading: true,
+                map: currTextures.hay
+            });
+        }
     }
     // add other tile types
     

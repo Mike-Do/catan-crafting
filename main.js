@@ -261,7 +261,12 @@ function createHexagonTile() {
         mountainGrass: await new THREE.TextureLoader().loadAsync('./assets/mountain_grass.png'),
         water: await new THREE.TextureLoader().loadAsync('./assets/water.jpg'),
         riverlandGrass: await new THREE.TextureLoader().loadAsync('./assets/riverland_grass.png'),
-        riverlandStone: await new THREE.TextureLoader().loadAsync('./assets/riverland_stone.png')
+        riverlandStone: await new THREE.TextureLoader().loadAsync('./assets/riverland_stone.png'),
+        dirt: await new THREE.TextureLoader().loadAsync('./assets/farm_dirt.png'),
+        farmGrass: await new THREE.TextureLoader().loadAsync('./assets/farm_grass.png'),
+        hay: await new THREE.TextureLoader().loadAsync('./assets/hay.png'),
+        clay: await new THREE.TextureLoader().loadAsync('./assets/clay.png'),
+        clayStone: await new THREE.TextureLoader().loadAsync('./assets/clay_stone.png')
     };
 
     // let stoneMesh = hexMesh(stoneGeo, textures.stone);
@@ -358,6 +363,22 @@ cloudGeos.forEach(cloudGeo => {
     const cloudMesh = new THREE.Mesh(cloudGeo, new THREE.MeshBasicMaterial({color: 0x000}));
     cloudGroup.add(cloudMesh);
 })
+
+// add WASD controls
+document.addEventListener('keydown', onDocumentKeyDown, false);
+
+function onDocumentKeyDown(event) {
+    const keyCode = event.which;
+    if (keyCode == 87) {
+        camera.position.z -= 1;
+    } else if (keyCode == 83) {
+        camera.position.z += 1;
+    } else if (keyCode == 65) {
+        camera.position.x -= 1;
+    } else if (keyCode == 68) {
+        camera.position.x += 1;
+    }
+}
 
 // called every frame; core function that brings everything together
 function animate() {

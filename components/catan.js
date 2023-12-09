@@ -6,7 +6,7 @@ export function getCatan(radius, level, textures) {
     const tiles = [
         { x: 0, y: 0, z: 0, type: "Grassland" },
         { x: 0, y: 0, z: Math.sqrt(3), type: "Grassland"},
-        { x: 0, y: 0, z: -Math.sqrt(3), type: "Grassland" },
+        { x: 0, y: 0, z: -Math.sqrt(3), type: "Farmland" },
         { x: 1.5, y: 0, z: Math.sqrt(3)/2, type: "Mountain" },
         { x: -1.5, y: 0, z: Math.sqrt(3)/2, type: "Mountain" },
         { x: 1.5, y: 0, z: -Math.sqrt(3)/2, type: "Riverland"},
