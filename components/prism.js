@@ -56,7 +56,7 @@ function load3DModel(modelType, radius, height, center) {
         // Position the model above the prism
         // center[1] is center of prism, add half height to get to top, add half scaled model to put model on top
         let newPositionY = center[1] + height / 2 + scaledSize.y / 2;
-        if (modelType === "stone") {
+        if (modelType === "stone" || modelType === "steve" || modelType === "steve_boat" || modelType === "horse") {
             newPositionY = center[1] + height / 2;
         }
 
@@ -126,8 +126,10 @@ function getMesh(tileType, radius, height, center) {
             let randomNumber = Math.random();
             if (randomNumber > 0.7 && randomNumber < 0.8) {
                 load3DModel("sheep", radius, height, center);
-            }
-        }
+            } else if (randomNumber > 0.87 && randomNumber < 0.9) {
+                load3DModel("steve", radius, height, center);
+            }    
+        }
     } else if (tileType == "Mountain") {
         // threshold for stone and mountain_grass
         let STONE_HEIGHT = MAX_HEIGHT * 0.2;
@@ -191,6 +193,13 @@ function getMesh(tileType, radius, height, center) {
             roughnessMap: currTextures.water,
             metalnessMap: currTextures.water,
             });
+
+            // randomly add 3D model steve in boat
+            // randomly add 3D model clay
+            let randomNumber = Math.random();
+            if (randomNumber > 0.76 && randomNumber < 0.8) {
+                load3DModel("steve_boat", radius, height, center);
+            }
         }
         // geo = new THREE.CylinderGeometry(17, 17, MAX_HEIGHT * 0.2, 50);
     } else if (tileType == "Farmland") {
@@ -233,12 +242,24 @@ function getMesh(tileType, radius, height, center) {
                 flatShading: true,
                 map: currTextures.clayStone
             });
+
+            // randomly add 3D model horse
+            let randomNumber = Math.random();
+            if (randomNumber > 0.73 && randomNumber < 0.8) {
+                load3DModel("horse", radius, height, center);
+            }
         } else if (height >= CLAY_HEIGHT) {
             geo = mergeBufferGeometries([geo, currGeo]);
             material = new THREE.MeshPhysicalMaterial({ 
                 flatShading: true,
                 map: currTextures.clay
             });
+
+            // randomly add 3D model clay
+            let randomNumber = Math.random();
+            if (randomNumber > 0.73 && randomNumber < 0.8) {
+                load3DModel("clay", radius, height, center);
+            }
         }
     }
     // add other tile types
