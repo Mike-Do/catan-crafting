@@ -21,3 +21,10 @@ npx vite
 
 Then open `http://localhost:5173` in your browser.
 
+# Attribution
+"Sheep" (https://skfb.ly/oERRF) by Kinga Kroliczek is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
+
+"Hay Bale" (https://skfb.ly/6UYEJ) by ThomasWhalley is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
+
+"Stylized Tree" (https://skfb.ly/opZM8) by yonimantz is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
+

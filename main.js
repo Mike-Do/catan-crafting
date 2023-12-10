@@ -115,6 +115,17 @@ light.shadow.camera.far = 500;
 
 scene.add(light);
 
+// add another light to brighten up the scene on other side
+const light2 = new THREE.DirectionalLight(0xffffff, 1);
+light2.position.set(0, 20, -10);
+light2.castShadow = true;
+light2.shadow.mapSize.width = 512;
+light2.shadow.mapSize.height = 512;
+light2.shadow.camera.near = 0.5;
+light2.shadow.camera.far = 500;
+
+scene.add(light2);
+
 function generateCamera() {
     let fieldOfView = 75;
     let aspect = window.innerWidth / window.innerHeight;
@@ -272,7 +283,7 @@ function createHexagonTile() {
 
     // Add the larger hexagon tile to the scene
     // stoneGeo = mergeBufferGeometries([smallHexGeometry, stoneGeo]);
-    const largerHexagon = getCatan(6, 4, textures);
+    const largerHexagon = getCatan(6, 4, textures, scene);
     scene.add(largerHexagon);
 })();
 
