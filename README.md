@@ -26,5 +26,11 @@ Then open `http://localhost:5173` in your browser.
 
 "Hay Bale" (https://skfb.ly/6UYEJ) by ThomasWhalley is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
 
-"Stylized Tree" (https://skfb.ly/opZM8) by yonimantz is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
+"Cartoon Tree or Bush Foliage" (https://skfb.ly/owuTq) by adarose is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
+
+"Stylized Rocks" (https://skfb.ly/oonMT) by carlosbarrera_10 is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
+
+"Desert Rocks" (https://skfb.ly/6RxxV) by MartynaGrek is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
+
+"hay bale" (https://skfb.ly/6WWPz) by 𝔾𝔸Ï𝔸 is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
 

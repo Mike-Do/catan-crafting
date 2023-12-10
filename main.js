@@ -283,7 +283,7 @@ function createHexagonTile() {
 
     // Add the larger hexagon tile to the scene
     // stoneGeo = mergeBufferGeometries([smallHexGeometry, stoneGeo]);
-    const largerHexagon = getCatan(6, 4, textures, scene);
+    const largerHexagon = getCatan(6, 2, textures, scene);
     scene.add(largerHexagon);
 })();
 

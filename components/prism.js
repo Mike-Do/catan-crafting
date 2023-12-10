@@ -26,15 +26,13 @@ let currScene;
 
 const loader = new GLTFLoader();
 
-// helper method for loading a 3D sheep
-function loadSheep(radius, height, center) {
-    loader.load( '../assets/sheep.glb', function ( gltf ) {
-        const sheep = gltf.scene;
+// helper method for loading a 3D model
+function load3DModel(modelType, radius, height, center) {
+    loader.load( `../assets/${modelType}.glb`, function ( gltf ) {
+        const model = gltf.scene;
 
         // get original size of 3d model
-        // Compute the bounding box of the sheep
-        let bbox = new THREE.Box3().setFromObject(sheep);
-        // Calculate the dimensions of the bounding box
+        let bbox = new THREE.Box3().setFromObject(model);
         let empty = new THREE.Vector3();
         let originalSize = bbox.getSize(empty);
 
@@ -43,24 +41,31 @@ function loadSheep(radius, height, center) {
         const scaleY = radius / originalSize.y;
         const scaleZ = radius / originalSize.z;
 
-        // Choose the smallest scaling factor to ensure the sheep fits within the prism
+        // Choose the smallest scaling factor to ensure the model fits within the prism
         const minScaleFactor = Math.min(scaleX, scaleY, scaleZ);
 
-        // randomize the rotation of the sheep
-        sheep.rotation.y = Math.random() * Math.PI * 2;
-        sheep.scale.set(minScaleFactor, minScaleFactor, minScaleFactor);
+        // randomize the rotation of the 3D model
+        model.rotation.y = Math.random() * Math.PI * 2;
+        model.scale.set(minScaleFactor, minScaleFactor, minScaleFactor);
 
-        // Calculate the size of the sheep after scaling
-        bbox = new THREE.Box3().setFromObject(sheep);
+        // Calculate the size of the model after scaling
+        bbox = new THREE.Box3().setFromObject(model);
         let scaled = new THREE.Vector3();
         let scaledSize = bbox.getSize(scaled);
 
-        // Position the sheep above the prism
-        // center[1] is center of prism, add half height to get to top, add half scaled sheep to put sheep on top
+        // Position the model above the prism
+        // center[1] is center of prism, add half height to get to top, add half scaled model to put model on top
         let newPositionY = center[1] + height / 2 + scaledSize.y / 2;
-        sheep.position.set(center[0], newPositionY, center[2]);
+        if (modelType === "stone") {
+            newPositionY = center[1] + height / 2;
+        }
+
+        if (modelType === "hay") {
+            newPositionY = center[1] - scaledSize.y / 2;
+        }
+        model.position.set(center[0], newPositionY, center[2]);
         
-        currScene.add(sheep);
+        currScene.add(model);
     }, undefined, function ( error ) {
         console.error( error );
     } );
@@ -116,9 +121,11 @@ function getMesh(tileType, radius, height, center) {
                 flatShading: true,
                 map: currTextures.grass
             });
+
+            // randomly add 3D model sheep
             let randomNumber = Math.random();
-            if (randomNumber > 0.77 && randomNumber < 0.8) {
-                loadSheep(radius, height, center);
+            if (randomNumber > 0.7 && randomNumber < 0.8) {
+                load3DModel("sheep", radius, height, center);
             }
         }
     } else if (tileType == "Mountain") {
@@ -132,12 +139,21 @@ function getMesh(tileType, radius, height, center) {
                 flatShading: true,
                 map: currTextures.stone
             });
+            let randomNumber = Math.random();
+//             if (randomNumber > 0.75 && randomNumber < 0.8) {
+//                 load3DModel("stone", radius, height, center);
+//             }
         } else if (height > GRASS_HEIGHT) {
             geo = mergeBufferGeometries([geo, currGeo]);
             material = new THREE.MeshPhysicalMaterial({ 
                 flatShading: true,
                 map: currTextures.mountainGrass
             });
+
+            let randomNumber = Math.random();
+            if (randomNumber > 0.1 && randomNumber < 0.8) {
+                load3DModel("stone", radius, height, center);
+            }
         }
     } else if (tileType == "Riverland") {
         let STONE_HEIGHT = MAX_HEIGHT * 0.3;
@@ -156,6 +172,12 @@ function getMesh(tileType, radius, height, center) {
                 flatShading: true,
                 map: currTextures.riverlandGrass
             });
+
+            // randomly add 3D model trees
+            let randomNumber = Math.random();
+            if (randomNumber > 0.7 && randomNumber < 0.8) {
+                load3DModel("tree", radius, height, center);
+            }
         } else if (height > WATER_HEIGHT) {
             geo = mergeBufferGeometries([geo, currGeo]);
             material = new THREE.MeshPhysicalMaterial({
@@ -182,6 +204,12 @@ function getMesh(tileType, radius, height, center) {
                 flatShading: true,
                 map: currTextures.dirt
             });
+
+            // randomly add 3D model sheep
+            let randomNumber = Math.random();
+            if (randomNumber > 0.6 && randomNumber < 0.8) {
+                load3DModel("hay", radius, height, center);
+            }
         } else if (height > GRASS_HEIGHT && height < HAY_HEIGHT) {
             geo = mergeBufferGeometries([geo, currGeo]);
             material = new THREE.MeshPhysicalMaterial({ 
