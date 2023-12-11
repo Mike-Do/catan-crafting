@@ -33,9 +33,5 @@ export function getCatan(radius, level, textures, scene, loadedModels) {
     });
 
     // create rectangular prism for the base of the catan board in blue
-
-
-
-
     return catanGroup;
 }

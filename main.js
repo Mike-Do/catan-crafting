@@ -2,8 +2,6 @@ import * as THREE from 'three';
 import GUI from 'lil-gui';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { mergeBufferGeometries } from 'https://cdn.skypack.dev/three-stdlib@2.8.5/utils/BufferGeometryUtils';
-// import SimplexNoise from 'https://cdn.skypack.dev/simplex-noise@3.0.0';
-// import { SimplexNoise } from 'simplex-noise';
 import { getCatan } from './components/catan';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
@@ -11,16 +9,21 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 const gui = new GUI();
 gui.add( document, 'title' );
 
-// const simplex = new SimplexNoise();
-
 const scene = new THREE.Scene();
-// const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
 let camera;
 let controls;
 let rain, rainGeo, rainMaterial, rainCount = 10000;
 generateCamera();
 
 const renderer = new THREE.WebGLRenderer();
+// const sceneContainer = document.body;
+// Append the renderer's DOM element to the scene container
+// sceneContainer.appendChild(renderer.domElement);
+
+// const containerWidth = document.body.clientWidth;
+// const containerHeight = document.body.clientHeight;
+// renderer.setSize(containerWidth, containerHeight);
+
 renderer.setSize( window.innerWidth, window.innerHeight );
 renderer.setClearColor(0x181716); // Set background color to beige
 // add shadow support
@@ -31,9 +34,6 @@ document.body.appendChild( renderer.domElement );
 controls = new OrbitControls(camera, renderer.domElement);
 controls.target.set(0, 0, 0);
 camera.position.set(0, 20, 100);
-
-// constrols.dampingFactor = 0.05;
-// controls.enableDamping = true;
 
 // board is positioned at origin, ensure camera cannot go below the board
 controls.maxPolarAngle = Math.PI / 2;
@@ -172,94 +172,69 @@ function generateCamera() {
 //     map
 // });
 
-// Load stone texture
-// const texture_loader = new THREE.TextureLoader();
-// let textures = {
-//     stone: texture_loader.load('./assets/stone.png')
-// };
+// Array to hold smaller hexagon meshes
+// const smallHexagons = [];
 
-// geometry for one small hexagon
+// // FUNCTIONS FOR GENERATING THE BOARD (7 HEXAGONS)
+// // Function to create a single small hexagon
 
-// const smallHexGeometry = new THREE.CylinderGeometry(0.99, 0.99, 1, 6, 1, false);
-
-// function hexGeometry(height) {
-//     let geo  = new THREE.CylinderGeometry(0.99, 0.99, height, 6, 1, false);
-//     // geo.translate(position.x, height * 0.5, position.y);
-//     return geo;
+// function createSmallHexagon(x, y, z, mat, geo) {
+//     const smallHexagonMesh = new THREE.Mesh(geo, mat);
+//     smallHexagonMesh.position.set(x, y, z);
+//     smallHexagonMesh.castShadow = true; //default is false
+//     smallHexagonMesh.receiveShadow = true; //default
+//     return smallHexagonMesh;
 // }
 
-// const MAX_HEIGHT = 10;
-// const STONE_HEIGHT = MAX_HEIGHT * 0.8;
-// const GRASS_HEIGHT = MAX_HEIGHT * 0.5;
+// // Function to create the larger hexagon tile
+// function createHexagonTile() {
+//     const hexagonGroup = new THREE.Group();
 
-// geometry for small hexagon with stone texture
-// let stoneGeo = new THREE.BoxGeometry(0, 0, 0);
-// let grassGeo = new THREE.BoxGeometry(0, 0, 0);
-// stoneGeo = mergeBufferGeometries([smallHexGeometry, stoneGeo]);
+//     // Define positions for smaller hexagons forming the larger hexagon
+//     const positions = [
+// 		[-Math.sqrt(3), 0, 0],
+// 		[0, 0, 0],
+// 		[Math.sqrt(3)/2, 0, 1.5],
+// 		[-Math.sqrt(3)/2, 0, 1.5],
+// 		[Math.sqrt(3), 0, 0],
+// 		[Math.sqrt(3)/2, 0, -1.5],
+//         [-Math.sqrt(3) / 2, 0, -1.5]
+//     ];
 
-// Array to hold smaller hexagon meshes
-const smallHexagons = [];
+//     // Create smaller hexagons at specified positions
+//     for (let i = 0; i < positions.length; i++) {
+//         const [x, y, z] = positions[i];
 
-// FUNCTIONS FOR GENERATING THE BOARD (7 HEXAGONS)
-// Function to create a single small hexagon
+//         // const height = simplex.noise2D(0.99, 0.99) * 5;
 
-function createSmallHexagon(x, y, z, mat, geo) {
-    const smallHexagonMesh = new THREE.Mesh(geo, mat);
-    smallHexagonMesh.position.set(x, y, z);
-    smallHexagonMesh.castShadow = true; //default is false
-    smallHexagonMesh.receiveShadow = true; //default
-    return smallHexagonMesh;
-}
+//         // let mat = new THREE.MeshStandardMaterial({ map: textures.stone });
+//         // let geo = getGeo(height);
 
-// Function to create the larger hexagon tile
-function createHexagonTile() {
-    const hexagonGroup = new THREE.Group();
+//         // add noise to the height of each hexagon
+//         const smallHexagon = createSmallHexagon(x, y, z);
+//         smallHexagons.push(smallHexagon);
+//         hexagonGroup.add(smallHexagon);
 
-    // Define positions for smaller hexagons forming the larger hexagon
-    const positions = [
-		[-Math.sqrt(3), 0, 0],
-		[0, 0, 0],
-		[Math.sqrt(3)/2, 0, 1.5],
-		[-Math.sqrt(3)/2, 0, 1.5],
-		[Math.sqrt(3), 0, 0],
-		[Math.sqrt(3)/2, 0, -1.5],
-        [-Math.sqrt(3) / 2, 0, -1.5]
-    ];
+//         // // randomly add stones
+//         // if (Math.random() > 0.5) {
+//         //     const stoneGeo = stone(0, {x, y, z});
+//         //     const stoneMesh = new THREE.Mesh(stoneGeo, new THREE.MeshBasicMaterial({color: 0x000000}));
+//         //     hexagonGroup.add(stoneMesh);
+//         // }
 
-    // Create smaller hexagons at specified positions
-    for (let i = 0; i < positions.length; i++) {
-        const [x, y, z] = positions[i];
+//         // // randomly add trees
+//         // if (Math.random() > 0.5) {
+//         //     const treeGeos = tree(0, {x, y, z});
+//         //     // loop through treeGeos and add each to hexagonGroup
+//         //     treeGeos.forEach(treeGeo => {
+//         //         const treeMesh = new THREE.Mesh(treeGeo, new THREE.MeshBasicMaterial({color: 0x00ff00}));
+//         //         hexagonGroup.add(treeMesh);
+//         //     })
+//         // }
+//     }
 
-        // const height = simplex.noise2D(0.99, 0.99) * 5;
-
-        // let mat = new THREE.MeshStandardMaterial({ map: textures.stone });
-        // let geo = getGeo(height);
-
-        // add noise to the height of each hexagon
-        const smallHexagon = createSmallHexagon(x, y, z);
-        smallHexagons.push(smallHexagon);
-        hexagonGroup.add(smallHexagon);
-
-        // // randomly add stones
-        // if (Math.random() > 0.5) {
-        //     const stoneGeo = stone(0, {x, y, z});
-        //     const stoneMesh = new THREE.Mesh(stoneGeo, new THREE.MeshBasicMaterial({color: 0x000000}));
-        //     hexagonGroup.add(stoneMesh);
-        // }
-
-        // // randomly add trees
-        // if (Math.random() > 0.5) {
-        //     const treeGeos = tree(0, {x, y, z});
-        //     // loop through treeGeos and add each to hexagonGroup
-        //     treeGeos.forEach(treeGeo => {
-        //         const treeMesh = new THREE.Mesh(treeGeo, new THREE.MeshBasicMaterial({color: 0x00ff00}));
-        //         hexagonGroup.add(treeMesh);
-        //     })
-        // }
-    }
-
-    return hexagonGroup;
-}
+//     return hexagonGroup;
+// }
 
 // function getGeo(height) { // TODO: take in height and position as parameters (AFTER PERLIN)
 //     // let geo = hexGeometry(height, position); // BRING THIS BACK AFTER PERLIN NOISE
@@ -326,28 +301,28 @@ function loadModelOnce(modelType) {
         loadModelOnce('tree')
     ]);
 
+    // scene.background = null;
+    // // After the scene is loaded, initiate Vanta.js background
+
+
     // let stoneMesh = hexMesh(stoneGeo, textures.stone);
     // const smallHexMaterial = new THREE.MeshStandardMaterial({ map: textures.stone });
 
     // Add the larger hexagon tile to the scene
     // stoneGeo = mergeBufferGeometries([smallHexGeometry, stoneGeo]);
-    const largerHexagon = getCatan(6, 3, textures, scene, loadedModels);
+    const largerHexagon = getCatan(6, 1, textures, scene, loadedModels);
     scene.add(largerHexagon);
 })();
 
-// function hexMesh(geo, map) {
-//     let mat = new MeshPhysicalMaterial({
-//         // envMap: envmap,
-//         // envMapIntensity: 0.135,
-//         flatShading: true,
-//         map
+
+// Function to initiate Vanta.js background
+// function initiateVantaBackground() {
+//     VANTA.WAVES({
+//         el: "body",
+//         mouseControls: true, // Add mouse interactivity if needed
+//         touchControls: true // Add touch interactivity if needed
+//         // Add any additional Vanta.js options as required
 //     });
-
-//     let mesh = new Mesh(geo, mat);
-//     mesh.castShadow = true; //default is false
-//     mesh.receiveShadow = true; //default
-
-//     return mesh;
 // }
 
 camera.position.z = 10;

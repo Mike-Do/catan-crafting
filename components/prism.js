@@ -5,65 +5,11 @@ import { mergeBufferGeometries } from 'https://cdn.skypack.dev/three-stdlib@2.8.
 const simplex = new SimplexNoise();
 let MAX_HEIGHT = 2; // adjust this for different types of terrains
 
-// define height for textures
-// const STONE_HEIGHT = MAX_HEIGHT * 0.8;
-// const GRASS_HEIGHT = MAX_HEIGHT * 0.5;
-
-let currGeo = new THREE.BoxGeometry(0,0,0);
-// let grassGeo = new THREE.BoxGeometry(0,0,0);
-// let waterGeo = new THREE.BoxGeometry(0,0,0);
-// let dirtGeo = new THREE.BoxGeometry(0,0,0);
-// let hayGeo = new THREE.BoxGeometry(0,0,0);
-
+let currGeo = new THREE.BoxGeometry(0, 0, 0);
 let currTextures;
 let currTileType;
 let currScene;
 let currLoadedModels;
-// Tile Type: 
-// 1. Perlin noise changes
-// 2. Textures used change
-
-// const loader = new GLTFLoader();
-
-// let loadedModels = {}; // Object to store loaded models
-
-// // Method that loads a 3D model once
-// function loadModelOnce(modelType) {
-//     return new Promise((resolve, reject) => {
-//         loader.load(`../assets/${modelType}.glb`, function (gltf) {
-//             const model = gltf.scene;
-//             loadedModels[modelType] = model.clone(); // Store the loaded model by its type
-//             resolve();
-//         }, undefined, function (error) {
-//             console.error(error);
-//             reject(error);
-//         });
-//     });
-// }
-
-// // Call loadModelOnce for each model type separately
-// Promise.all([
-//     loadModelOnce('clay'),
-//     loadModelOnce('hay'),
-//     loadModelOnce('horse'),
-//     loadModelOnce('sheep'),
-//     loadModelOnce('steve'),
-//     loadModelOnce('steve_boat'),
-//     loadModelOnce('stone'),
-//     loadModelOnce('tree')
-// ])
-// .then(() => {
-//     // All models are loaded, you can now use them in your scene
-//     // For example:
-//     // placeModel('sheep', radius, height, center);
-//     // placeModel('clay', radius, height, center);
-//     // placeModel('brick', radius, height, center);
-//     console.log("All models loaded successfully!");
-// })
-// .catch((error) => {
-//     // Handle errors if any model fails to load
-//     console.error('Failed to load models:', error);
-// });
 
 // Function to position and scale the loaded model
 function load3DModel(modelType, radius, height, center) {
@@ -113,52 +59,6 @@ function load3DModel(modelType, radius, height, center) {
     currScene.add(model);
 }
 
-// helper method for loading a 3D model
-// function load3DModel(modelType, radius, height, center) {
-//     loader.load( `../assets/${modelType}.glb`, function ( gltf ) {
-//         const model = gltf.scene;
-
-//         // get original size of 3d model
-//         let bbox = new THREE.Box3().setFromObject(model);
-//         let empty = new THREE.Vector3();
-//         let originalSize = bbox.getSize(empty);
-
-//         // calculate scaling factor based on original size and radius
-//         const scaleX = radius / originalSize.x;
-//         const scaleY = radius / originalSize.y;
-//         const scaleZ = radius / originalSize.z;
-
-//         // Choose the smallest scaling factor to ensure the model fits within the prism
-//         const minScaleFactor = Math.min(scaleX, scaleY, scaleZ);
-
-//         // randomize the rotation of the 3D model
-//         model.rotation.y = Math.random() * Math.PI * 2;
-//         model.scale.set(minScaleFactor, minScaleFactor, minScaleFactor);
-
-//         // Calculate the size of the model after scaling
-//         bbox = new THREE.Box3().setFromObject(model);
-//         let scaled = new THREE.Vector3();
-//         let scaledSize = bbox.getSize(scaled);
-
-//         // Position the model above the prism
-//         // center[1] is center of prism, add half height to get to top, add half scaled model to put model on top
-//         let newPositionY = center[1] + height / 2 + scaledSize.y / 2;
-//         if (modelType === "stone" || modelType === "steve" || modelType === "steve_boat" || modelType === "horse") {
-//             newPositionY = center[1] + height / 2;
-//         }
-
-//         if (modelType === "hay") {
-//             newPositionY = center[1] - scaledSize.y / 2;
-//         }
-
-//         model.position.set(center[0], newPositionY, center[2]);
-//         
-//         currScene.add(model);
-//     }, undefined, function ( error ) {
-//         console.error( error );
-//     } );
-// }
-
 // helper function that returns height randomly generated with perlin noise
 function getPerlinNoise(center, tileType) {
     let parameter1 = 0.3;
@@ -194,7 +94,7 @@ function getMesh(tileType, radius, height, center) {
 
     if (tileType == "Grassland") {
         // threshold for stone and grass
-        let STONE_HEIGHT = MAX_HEIGHT * 0.7;
+        let STONE_HEIGHT = MAX_HEIGHT * 0.6;
         let GRASS_HEIGHT = 0;
         
         if(height > STONE_HEIGHT) {
@@ -228,11 +128,7 @@ function getMesh(tileType, radius, height, center) {
             material = new THREE.MeshPhysicalMaterial({ 
                 flatShading: true,
                 map: currTextures.stone
-            });
-            let randomNumber = Math.random();
-//             if (randomNumber > 0.75 && randomNumber < 0.8) {
-//                 load3DModel("stone", radius, height, center);
-//             }
+            });
         } else if (height > GRASS_HEIGHT) {
             geo = mergeBufferGeometries([geo, currGeo]);
             material = new THREE.MeshPhysicalMaterial({ 
@@ -283,13 +179,11 @@ function getMesh(tileType, radius, height, center) {
             });
 
             // randomly add 3D model steve in boat
-            // randomly add 3D model clay
             let randomNumber = Math.random();
             if (randomNumber > 0.76 && randomNumber < 0.8) {
                 load3DModel("steve_boat", radius, height, center);
             }
-        }
-        // geo = new THREE.CylinderGeometry(17, 17, MAX_HEIGHT * 0.2, 50);
+        }
     } else if (tileType == "Farmland") {
         let DIRT_HEIGHT = 0;
         let GRASS_HEIGHT = MAX_HEIGHT * 0.2;
@@ -329,13 +223,7 @@ function getMesh(tileType, radius, height, center) {
             material = new THREE.MeshPhysicalMaterial({ 
                 flatShading: true,
                 map: currTextures.clayStone
-            });
-
-            // randomly add 3D model horse
-//             let randomNumber = Math.random();
-//             if (randomNumber > 0.73 && randomNumber < 0.8) {
-//                 load3DModel("horse", radius, height, center);
-//             }
+            });
         } else if (height >= CLAY_HEIGHT) {
             geo = mergeBufferGeometries([geo, currGeo]);
             material = new THREE.MeshPhysicalMaterial({ 
@@ -349,23 +237,7 @@ function getMesh(tileType, radius, height, center) {
                 load3DModel("clay", radius, height, center);
             }
         }
-    }
-    // add other tile types
-    
-    // if(height > STONE_HEIGHT) {
-    //     geo = mergeBufferGeometries([geo, stoneGeo]);
-    //     material = new THREE.MeshPhysicalMaterial({ 
-    //         flatShading: true,
-    //         map: currTextures.stone
-    //     });
-    // } else if (height > GRASS_HEIGHT) {
-    //     geo = mergeBufferGeometries([geo, grassGeo]);
-    //     material = new THREE.MeshPhysicalMaterial({ 
-    //         flatShading: true,
-    //         map: currTextures.grass
-    //     });
-    // }
-
+    }
     const mesh = new THREE.Mesh(geo, material);
 
     // add special effects for Riverland
@@ -400,26 +272,6 @@ export function getPrisms(center, radius, level, yFlip, textures, tileType, scen
         
         center[1] += height / 2;
 
-        // let geo = new THREE.CylinderGeometry(radius * 0.95, radius * 0.95, height, 3);
-        // let material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-
-
-        // if(height > STONE_HEIGHT) {
-        //     geo = mergeBufferGeometries([geo, stoneGeo]);
-        //     material = new THREE.MeshPhysicalMaterial({ 
-        //         flatShading: true,
-        //         map: currTextures.stone
-        //     });
-        // } else if (height > GRASS_HEIGHT) {
-        //     geo = mergeBufferGeometries([geo, grassGeo]);
-        //     material = new THREE.MeshPhysicalMaterial({ 
-        //         flatShading: true,
-        //         map: currTextures.grass
-        //     });
-        // }
-          
-        
-        // const mesh = new THREE.Mesh(geo, material);
         const mesh = getMesh(currTileType, radius, height, center);
         mesh.position.set(...center);
         mesh.rotation.set(0, yFlip ? Math.PI : 0, 0);
