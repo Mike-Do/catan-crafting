@@ -399,16 +399,23 @@ cloudGeos.forEach(cloudGeo => {
 // add WASD controls
 document.addEventListener('keydown', onDocumentKeyDown, false);
 
+let angle = 0;
+let radius = 10;
+
 function onDocumentKeyDown(event) {
     const keyCode = event.which;
     if (keyCode == 87) {
-        camera.position.z -= 1;
+        // camera.position.z -= 1;
+        radius -= 1;
     } else if (keyCode == 83) {
-        camera.position.z += 1;
+        // camera.position.z += 1;
+        radius += 1;
     } else if (keyCode == 65) {
-        camera.position.x -= 1;
+        // camera.position.x -= 1;
+        angle -= 0.1;
     } else if (keyCode == 68) {
-        camera.position.x += 1;
+        // camera.position.x += 1;
+        angle += 0.1;
     }
 }
 
@@ -452,6 +459,12 @@ function animate() {
     // rain.rotation.y += 0.002;
     // velocities.needsUpdate = true;
 
+    // camera rotation
+    // radius is the curent distance from the center of the scene
+    angle += 0.005;
+    camera.position.x = radius * Math.cos(angle);
+    camera.position.z = radius * Math.sin(angle);
+    camera.lookAt(new THREE.Vector3(0, 0, 0));
 
 	renderer.render( scene, camera );
 }
