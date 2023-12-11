@@ -127,6 +127,17 @@ light2.shadow.camera.far = 500;
 
 scene.add(light2);
 
+// add another light to brighten up the scene on other side
+const light3 = new THREE.DirectionalLight(0xffffff, 1);
+light3.position.set(10, 20, 0);
+light3.castShadow = true;
+light3.shadow.mapSize.width = 512;
+light3.shadow.mapSize.height = 512;
+light3.shadow.camera.near = 0.5;
+light3.shadow.camera.far = 500;
+
+scene.add(light3);
+
 function generateCamera() {
     let fieldOfView = 75;
     let aspect = window.innerWidth / window.innerHeight;
