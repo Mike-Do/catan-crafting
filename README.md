@@ -41,3 +41,5 @@ Then open `http://localhost:5173` in your browser.
 "Minecraft Steve Character" (https://skfb.ly/ozGWQ) by nigam is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
 
 "Horse" (https://skfb.ly/6WQBD) by Graphfun is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
+
+"Diamond" (https://skfb.ly/o6ypJ) by Karolina Renkiewicz is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).

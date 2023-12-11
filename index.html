@@ -1,67 +1,48 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="utf-8">
-		<title>Catan Crafting</title>
-		<style>
-			/* body 
-			{ margin: 0;
-			} */
-			body {
-				margin: 0;
-				overflow: hidden;
-				width: 100%;
-				height: 100%;
-			}
-			
-			
-			canvas {
-				/* position: fixed;
-				top: 0;
-				left: 0;
-				width: 100%;
-				height: 100%; */
-				z-index: 0;
-			}
-			/* #background-container {
-				position: fixed;
-				width: 100%;
-				height: 100%;
-				z-index: 9999;
-			} */
-			/* #background-container {
-				position: fixed;
-				width: 100%;
-				height: 100%;
-				z-index: -1;
-			}
+<head>
+    <meta charset="utf-8">
+    <title>Catan Crafting</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            width: 100%;
+            height: 100%;
+        }
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+        #background-container {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+    </style>
+</head>
+<body>
+    <div id="background-container"></div>
+    <script type="module" src="/main.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vanta/dist/vanta.waves.min.js"></script>
+    <script>
+        // Create your Three.js scene here...
 
-			#scene-container {
-				position: absolute;
-				top: 0;
-				left: 0;
-				width: 100%;
-				height: 100%;
-				z-index: 0;
-			} */
-		</style>
-	</head>
-	<body>
-		<!-- <div id="background-container"></div> -->
-		<script type="module" src="/main.js"></script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
-		<script src="https://cdn.jsdelivr.net/npm/vanta/dist/vanta.waves.min.js"></script>
-		<script>
-			// In your main.js or script where Three.js scene is set up
-			// Create your Three.js scene here...
-
-			// Create a Vanta.js background within the container
-			VANTA.WAVES({
-				el: "body",
-				mouseControls: true, // Add mouse interactivity if needed
-				touchControls: true // Add touch interactivity if needed
-				// Add any additional Vanta.js options as required
-			});
-		</script>
-	</body>
+        // Create a Vanta.js background within the background-container
+        VANTA.WAVES({
+			mouseControls: true,
+			touchControls: true,
+			zoom: 0.75,
+			shininess: 50,
+            el: "#background-container"
+            // Add any additional Vanta.js options as required
+        });
+    </script>
+</body>
 </html>
