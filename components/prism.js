@@ -1,7 +1,6 @@
 import * as THREE from 'three';
 import SimplexNoise from 'https://cdn.skypack.dev/simplex-noise@3.0.0';
 import { mergeBufferGeometries } from 'https://cdn.skypack.dev/three-stdlib@2.8.5/utils/BufferGeometryUtils';
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
 const simplex = new SimplexNoise();
 let MAX_HEIGHT = 2; // adjust this for different types of terrains
@@ -19,57 +18,146 @@ let currGeo = new THREE.BoxGeometry(0,0,0);
 let currTextures;
 let currTileType;
 let currScene;
-
+let currLoadedModels;
 // Tile Type: 
 // 1. Perlin noise changes
 // 2. Textures used change
 
-const loader = new GLTFLoader();
+// const loader = new GLTFLoader();
+
+// let loadedModels = {}; // Object to store loaded models
+
+// // Method that loads a 3D model once
+// function loadModelOnce(modelType) {
+//     return new Promise((resolve, reject) => {
+//         loader.load(`../assets/${modelType}.glb`, function (gltf) {
+//             const model = gltf.scene;
+//             loadedModels[modelType] = model.clone(); // Store the loaded model by its type
+//             resolve();
+//         }, undefined, function (error) {
+//             console.error(error);
+//             reject(error);
+//         });
+//     });
+// }
+
+// // Call loadModelOnce for each model type separately
+// Promise.all([
+//     loadModelOnce('clay'),
+//     loadModelOnce('hay'),
+//     loadModelOnce('horse'),
+//     loadModelOnce('sheep'),
+//     loadModelOnce('steve'),
+//     loadModelOnce('steve_boat'),
+//     loadModelOnce('stone'),
+//     loadModelOnce('tree')
+// ])
+// .then(() => {
+//     // All models are loaded, you can now use them in your scene
+//     // For example:
+//     // placeModel('sheep', radius, height, center);
+//     // placeModel('clay', radius, height, center);
+//     // placeModel('brick', radius, height, center);
+//     console.log("All models loaded successfully!");
+// })
+// .catch((error) => {
+//     // Handle errors if any model fails to load
+//     console.error('Failed to load models:', error);
+// });
+
+// Function to position and scale the loaded model
+function load3DModel(modelType, radius, height, center) {
+    // Handle the case where the model hasn't been loaded yet
+    if (!currLoadedModels[modelType]) {
+        console.error(`Model type ${modelType} not loaded yet`);
+        return;
+    }
+
+    const model = currLoadedModels[modelType].clone(); // Clone the loaded model
+
+     // get original size of 3d model
+    let bbox = new THREE.Box3().setFromObject(model);
+    let empty = new THREE.Vector3();
+    let originalSize = bbox.getSize(empty);
+
+     // calculate scaling factor based on original size and radius
+     const scaleX = radius / originalSize.x;
+     const scaleY = radius / originalSize.y;
+     const scaleZ = radius / originalSize.z;
+
+    // Choose the smallest scaling factor to ensure the model fits within the prism
+    const minScaleFactor = Math.min(scaleX, scaleY, scaleZ);
+
+    // randomize the rotation of the 3D model
+    model.rotation.y = Math.random() * Math.PI * 2;
+    model.scale.set(minScaleFactor, minScaleFactor, minScaleFactor);
+
+    // Calculate the size of the model after scaling
+    bbox = new THREE.Box3().setFromObject(model);
+    let scaled = new THREE.Vector3();
+    let scaledSize = bbox.getSize(scaled);
+
+    // Position the model above the prism
+    // center[1] is center of prism, add half height to get to top, add half scaled model to put model on top
+    let newPositionY = center[1] + height / 2 + scaledSize.y / 2;
+    if (modelType === "stone" || modelType === "steve" || modelType === "steve_boat") {
+        newPositionY = center[1] + height / 2;
+    }
+
+    if (modelType === "hay") {
+        newPositionY = center[1] - scaledSize.y / 2;
+    }
+
+    model.position.set(center[0], newPositionY, center[2]);
+        
+    currScene.add(model);
+}
 
 // helper method for loading a 3D model
-function load3DModel(modelType, radius, height, center) {
-    loader.load( `../assets/${modelType}.glb`, function ( gltf ) {
-        const model = gltf.scene;
+// function load3DModel(modelType, radius, height, center) {
+//     loader.load( `../assets/${modelType}.glb`, function ( gltf ) {
+//         const model = gltf.scene;
 
-        // get original size of 3d model
-        let bbox = new THREE.Box3().setFromObject(model);
-        let empty = new THREE.Vector3();
-        let originalSize = bbox.getSize(empty);
+//         // get original size of 3d model
+//         let bbox = new THREE.Box3().setFromObject(model);
+//         let empty = new THREE.Vector3();
+//         let originalSize = bbox.getSize(empty);
 
-        // calculate scaling factor based on original size and radius
-        const scaleX = radius / originalSize.x;
-        const scaleY = radius / originalSize.y;
-        const scaleZ = radius / originalSize.z;
+//         // calculate scaling factor based on original size and radius
+//         const scaleX = radius / originalSize.x;
+//         const scaleY = radius / originalSize.y;
+//         const scaleZ = radius / originalSize.z;
 
-        // Choose the smallest scaling factor to ensure the model fits within the prism
-        const minScaleFactor = Math.min(scaleX, scaleY, scaleZ);
+//         // Choose the smallest scaling factor to ensure the model fits within the prism
+//         const minScaleFactor = Math.min(scaleX, scaleY, scaleZ);
 
-        // randomize the rotation of the 3D model
-        model.rotation.y = Math.random() * Math.PI * 2;
-        model.scale.set(minScaleFactor, minScaleFactor, minScaleFactor);
+//         // randomize the rotation of the 3D model
+//         model.rotation.y = Math.random() * Math.PI * 2;
+//         model.scale.set(minScaleFactor, minScaleFactor, minScaleFactor);
 
-        // Calculate the size of the model after scaling
-        bbox = new THREE.Box3().setFromObject(model);
-        let scaled = new THREE.Vector3();
-        let scaledSize = bbox.getSize(scaled);
+//         // Calculate the size of the model after scaling
+//         bbox = new THREE.Box3().setFromObject(model);
+//         let scaled = new THREE.Vector3();
+//         let scaledSize = bbox.getSize(scaled);
 
-        // Position the model above the prism
-        // center[1] is center of prism, add half height to get to top, add half scaled model to put model on top
-        let newPositionY = center[1] + height / 2 + scaledSize.y / 2;
-        if (modelType === "stone" || modelType === "steve" || modelType === "steve_boat" || modelType === "horse") {
-            newPositionY = center[1] + height / 2;
-        }
+//         // Position the model above the prism
+//         // center[1] is center of prism, add half height to get to top, add half scaled model to put model on top
+//         let newPositionY = center[1] + height / 2 + scaledSize.y / 2;
+//         if (modelType === "stone" || modelType === "steve" || modelType === "steve_boat" || modelType === "horse") {
+//             newPositionY = center[1] + height / 2;
+//         }
 
-        if (modelType === "hay") {
-            newPositionY = center[1] - scaledSize.y / 2;
-        }
-        model.position.set(center[0], newPositionY, center[2]);
-        
-        currScene.add(model);
-    }, undefined, function ( error ) {
-        console.error( error );
-    } );
-}
+//         if (modelType === "hay") {
+//             newPositionY = center[1] - scaledSize.y / 2;
+//         }
+
+//         model.position.set(center[0], newPositionY, center[2]);
+//         
+//         currScene.add(model);
+//     }, undefined, function ( error ) {
+//         console.error( error );
+//     } );
+// }
 
 // helper function that returns height randomly generated with perlin noise
 function getPerlinNoise(center, tileType) {
@@ -244,10 +332,10 @@ function getMesh(tileType, radius, height, center) {
             });
 
             // randomly add 3D model horse
-            let randomNumber = Math.random();
-            if (randomNumber > 0.73 && randomNumber < 0.8) {
-                load3DModel("horse", radius, height, center);
-            }
+//             let randomNumber = Math.random();
+//             if (randomNumber > 0.73 && randomNumber < 0.8) {
+//                 load3DModel("horse", radius, height, center);
+//             }
         } else if (height >= CLAY_HEIGHT) {
             geo = mergeBufferGeometries([geo, currGeo]);
             material = new THREE.MeshPhysicalMaterial({ 
@@ -289,7 +377,7 @@ function getMesh(tileType, radius, height, center) {
     return mesh;
 }
 
-export function getPrisms(center, radius, level, yFlip, textures, tileType, scene) {
+export function getPrisms(center, radius, level, yFlip, textures, tileType, scene, loadedModels) {
     if (textures != undefined) {
         currTextures = textures;
     }
@@ -301,6 +389,10 @@ export function getPrisms(center, radius, level, yFlip, textures, tileType, scen
     if (scene != undefined) {
         currScene = scene;
     }
+
+    if (loadedModels != undefined) {
+        currLoadedModels = loadedModels;
+    }
 
     if (level === 0) {
         // add simplex noise

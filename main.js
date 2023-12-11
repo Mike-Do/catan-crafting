@@ -5,6 +5,7 @@ import { mergeBufferGeometries } from 'https://cdn.skypack.dev/three-stdlib@2.8.
 // import SimplexNoise from 'https://cdn.skypack.dev/simplex-noise@3.0.0';
 // import { SimplexNoise } from 'simplex-noise';
 import { getCatan } from './components/catan';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
 // GUI
 const gui = new GUI();
@@ -47,8 +48,8 @@ controls.update();
 // scene.add(skybox);
 
 // add skybox using cube mapping, have files back, front, top, bottom, left, right located in skybox/assets
-// const loader = new THREE.CubeTextureLoader();
-// const texture = loader.load([
+// const skybox = new THREE.CubeTextureLoader();
+// const texture = skybox.load([
 //     './assets/skybox/right.jpg',
 //     './assets/skybox/left.jpg',
 //     './assets/skybox/top.jpg',
@@ -262,8 +263,26 @@ function createHexagonTile() {
 //     return geo;
 // }
 
-// Load textures asynchronously on the board
+const loader = new GLTFLoader();
+let loadedModels = {}; // Object to store loaded models
+
+// helper method that loads a 3D model once
+function loadModelOnce(modelType) {
+    return new Promise((resolve, reject) => {
+        loader.load(`../assets/${modelType}.glb`, function (gltf) {
+            const model = gltf.scene;
+            loadedModels[modelType] = model.clone(); // Store the loaded model by its type
+            resolve();
+        }, undefined, function (error) {
+            console.error(error);
+            reject(error);
+        });
+    });
+}
+
+// Load textures and 3D models asynchronously on the board
 (async function () {
+    // wait for textures to load before rendering scene
     let textures = {
         stone: await new THREE.TextureLoader().loadAsync('./assets/stone.png'),
         grass: await new THREE.TextureLoader().loadAsync('./assets/grass.png'),
@@ -278,12 +297,23 @@ function createHexagonTile() {
         clayStone: await new THREE.TextureLoader().loadAsync('./assets/clay_stone.png')
     };
 
+    // wait for all the 3D models to load before rendering scene
+    await Promise.all([
+        loadModelOnce('clay'),
+        loadModelOnce('hay'),
+        loadModelOnce('sheep'),
+        loadModelOnce('steve'),
+        loadModelOnce('steve_boat'),
+        loadModelOnce('stone'),
+        loadModelOnce('tree')
+    ]);
+
     // let stoneMesh = hexMesh(stoneGeo, textures.stone);
     // const smallHexMaterial = new THREE.MeshStandardMaterial({ map: textures.stone });
 
     // Add the larger hexagon tile to the scene
     // stoneGeo = mergeBufferGeometries([smallHexGeometry, stoneGeo]);
-    const largerHexagon = getCatan(6, 2, textures, scene);
+    const largerHexagon = getCatan(6, 3, textures, scene, loadedModels);
     scene.add(largerHexagon);
 })();
 
