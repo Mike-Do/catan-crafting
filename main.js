@@ -474,7 +474,7 @@ function animate() {
 
     // camera rotation
     // radius is the curent distance from the center of the scene
-    angle += 0.005;
+    angle += 0.01;
     camera.position.x = radius * Math.cos(angle);
     camera.position.z = radius * Math.sin(angle);
     camera.lookAt(new THREE.Vector3(0, 0, 0));
