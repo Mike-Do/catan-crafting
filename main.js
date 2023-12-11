@@ -179,31 +179,20 @@ function generateCamera() {
 // };
 
 // geometry for one small hexagon
-const smallHexGeometry = new THREE.CylinderGeometry(0.99, 0.99, 1, 6, 1, false);
 
-const STONE_HEIGHT = MAX_HEIGHT * 0.8;
-const GRASS_HEIGHT = MAX_HEIGHT * 0.5;
+// const smallHexGeometry = new THREE.CylinderGeometry(0.99, 0.99, 1, 6, 1, false);
+
+// function hexGeometry(height) {
+//     let geo  = new THREE.CylinderGeometry(0.99, 0.99, height, 6, 1, false);
+//     // geo.translate(position.x, height * 0.5, position.y);
+//     return geo;
+// }
+
+// const MAX_HEIGHT = 10;
+// const STONE_HEIGHT = MAX_HEIGHT * 0.8;
+// const GRASS_HEIGHT = MAX_HEIGHT * 0.5;
 
 // geometry for small hexagon with stone texture
-let stoneGeo = new THREE.BoxGeometry(0, 0, 0);
-let grassGeo = new THREE.BoxGeometry(0, 0, 0);
-// stoneGeo = mergeBufferGeometries([smallHexGeometry, stoneGeo]);
-
-function hex(height, position) {
-    // let geo = hexGeometry(height, position); TODO: ADD THIS AFTER PERLIN NOISE DONE
-    let geo = smallHexGeometry; // PLACEHOLDER
-
-    if (height > STONE_HEIGHT) {
-        stoneGeo = mergeBufferGeometries([geo, stoneGeo]);
-
-        if (Math.random() > 0.8) {
-            stoneGeo = mergeBufferGeometries([stoneGeo, stone(height, position)]);
-        }
-    }
-    else if (height > GRASS_HEIGHT) {
-        grassGeo = mergeBufferGeometries([geo, grassGeo]);
-    }
-}
 // let stoneGeo = new THREE.BoxGeometry(0, 0, 0);
 // let grassGeo = new THREE.BoxGeometry(0, 0, 0);
 // stoneGeo = mergeBufferGeometries([smallHexGeometry, stoneGeo]);
@@ -345,6 +334,7 @@ function loadModelOnce(modelType) {
     const largerHexagon = getCatan(6, 3, textures, scene, loadedModels);
     scene.add(largerHexagon);
 })();
+
 // function hexMesh(geo, map) {
 //     let mat = new MeshPhysicalMaterial({
 //         // envMap: envmap,
