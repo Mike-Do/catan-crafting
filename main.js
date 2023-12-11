@@ -31,8 +31,14 @@ document.body.appendChild( renderer.domElement );
 controls = new OrbitControls(camera, renderer.domElement);
 controls.target.set(0, 0, 0);
 camera.position.set(0, 20, 100);
+
 // constrols.dampingFactor = 0.05;
 // controls.enableDamping = true;
+
+// board is positioned at origin, ensure camera cannot go below the board
+controls.maxPolarAngle = Math.PI / 2;
+
+
 controls.update();
 
 // add skybox called "catan_skybox.jpeg" sample the texture on the inside of the cube to make skybox using direction vectors
@@ -154,6 +160,7 @@ function generateCamera() {
     camera.position.z = 500;
     camera.up.set(0, 1, 0);
     camera.lookAt(new THREE.Vector3(0, 0, 0));
+
     scene.add(camera);
   }
 
