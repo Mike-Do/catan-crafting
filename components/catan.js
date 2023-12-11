@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { getTile } from './tile';
 
-export function getCatan(radius, level, textures, scene) {
+export function getCatan(radius, level, textures, scene, loadedModels) {
     const catanGroup = new THREE.Group();
     const tiles = [
         { x: 0, y: 0, z: 0, type: "Grassland" },
@@ -14,10 +14,28 @@ export function getCatan(radius, level, textures, scene) {
     ];
 
     tiles.forEach(tile => {
-        const tileMesh = getTile([tile.x * radius * 1.2, tile.y * radius, tile.z * radius * 1.2], radius, level, textures, tile.type, scene);
+        const tileMesh = getTile([tile.x * radius * 1.2, tile.y * radius, tile.z * radius * 1.2], radius, level, textures, tile.type, scene, loadedModels);
         // tileMesh.position.set(tile.x, tile.y, tile.z);
         catanGroup.add(...tileMesh);
+
+        // create larger hexes to go underneath the tiles
+        let hexGeo = new THREE.CylinderGeometry(radius * 1.3, radius * 1.3, 1, 6);
+        let hexMat = new THREE.MeshBasicMaterial({ color: 0x000000 });
+        let hex = new THREE.Mesh(hexGeo, hexMat);
+
+        // position the hexes so they are centered beneath the tiles and have the same orientation
+        hex.position.set(tile.x * radius * 1.2, tile.y * radius - 0.5, tile.z * radius * 1.2);
+        hex.rotation.y = Math.PI / 6;
+
+        // set color to edcf8d
+        hexMat.color.setHex(0xcca471);
+        catanGroup.add(hex);
     });
+
+    // create rectangular prism for the base of the catan board in blue
+
+
+
 
     return catanGroup;
 }
