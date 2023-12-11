@@ -25,7 +25,9 @@ const renderer = new THREE.WebGLRenderer();
 // renderer.setSize(containerWidth, containerHeight);
 
 renderer.setSize( window.innerWidth, window.innerHeight );
-renderer.setClearColor(0x181716); // Set background color to beige
+// renderer.setClearColor(0x181716); // Set background color to beige
+// set background color to transparent
+renderer.setClearColor(0x000000, 0);
 // add shadow support
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
@@ -33,7 +35,7 @@ document.body.appendChild( renderer.domElement );
 
 controls = new OrbitControls(camera, renderer.domElement);
 controls.target.set(0, 0, 0);
-camera.position.set(0, 20, 100);
+camera.position.set(0, 35, 50);
 
 // board is positioned at origin, ensure camera cannot go below the board
 controls.maxPolarAngle = Math.PI / 2;
@@ -143,6 +145,17 @@ light3.shadow.camera.near = 0.5;
 light3.shadow.camera.far = 500;
 
 scene.add(light3);
+
+// add another light to brighten up the scene on other side
+const light4 = new THREE.DirectionalLight(0xffffff, 1);
+light4.position.set(-10, 20, 0);
+light4.castShadow = true;
+light4.shadow.mapSize.width = 512;
+light4.shadow.mapSize.height = 512;
+light4.shadow.camera.near = 0.5;
+light4.shadow.camera.far = 500;
+
+scene.add(light4);
 
 function generateCamera() {
     let fieldOfView = 75;
@@ -310,7 +323,7 @@ function loadModelOnce(modelType) {
 
     // Add the larger hexagon tile to the scene
     // stoneGeo = mergeBufferGeometries([smallHexGeometry, stoneGeo]);
-    const largerHexagon = getCatan(6, 1, textures, scene, loadedModels);
+    const largerHexagon = getCatan(6, 3, textures, scene, loadedModels);
     scene.add(largerHexagon);
 })();
 
@@ -402,13 +415,13 @@ document.addEventListener('keydown', onDocumentKeyDown, false);
 function onDocumentKeyDown(event) {
     const keyCode = event.which;
     if (keyCode == 87) {
-        camera.position.z -= 1;
+        camera.position.z -= 0.5;
     } else if (keyCode == 83) {
-        camera.position.z += 1;
+        camera.position.z += 0.5;
     } else if (keyCode == 65) {
-        camera.position.x -= 1;
+        camera.position.x -= 0.5;
     } else if (keyCode == 68) {
-        camera.position.x += 1;
+        camera.position.x += 0.5;
     }
 }
 
