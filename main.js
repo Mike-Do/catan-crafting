@@ -9,7 +9,7 @@ import { addGUI } from './components/gui';
 var weather;
 var catan;
 const appState = {
-    detail: 3,
+    detail: 2,
     focus: 0,
     cloud: true,
     rain: true,
@@ -108,8 +108,7 @@ function generateCamera() {
     camera.up.set(0, 1, 0);
     camera.lookAt(new THREE.Vector3(0, 0, 12.470765814495916));
 
-    scene.add
-    (camera);
+    scene.add(camera);
   }
 
 
@@ -158,7 +157,7 @@ function loadModelOnce(modelType) {
         loadModelOnce('tree')
     ]);
 
-    const largerHexagon = getCatan(6, appState.detail, textures, scene, loadedModels);
+    const largerHexagon = getCatan(6, appState.detail, textures, loadedModels, appState);
     catan = largerHexagon;
     scene.add(largerHexagon);
 })();
@@ -169,7 +168,7 @@ function reloadCatan() {
     removeObject(catan);
 
     // re-instantiate the catan board with the new level of detail
-    catan = getCatan(6, appState.detail, textures, scene, loadedModels);
+    catan = getCatan(6, appState.detail, textures, loadedModels, appState);
     scene.add(catan);
 }
 

@@ -10,6 +10,7 @@ let currTextures;
 let currTileType;
 let currGroup;
 let currLoadedModels;
+let currAppState;
 
 // Function to position and scale the loaded model
 function load3DModel(modelType, radius, height, center) {
@@ -111,13 +112,16 @@ function getMesh(tileType, radius, height, center) {
                 map: currTextures.grass
             });
 
-            // randomly add 3D model sheep
+            // randomly add 3D model sheep and steve if not raining
             let randomNumber = Math.random();
-            if (randomNumber > 0.7 && randomNumber < 0.8) {
-                load3DModel("sheep", radius, height, center);
-            } else if (randomNumber > 0.87 && randomNumber < 0.9) {
-                load3DModel("steve", radius, height, center);
-            }    
+            if (currAppState.rain != true) {
+                if (randomNumber > 0.7 && randomNumber < 0.8) {
+                    load3DModel("sheep", radius, height, center);
+                } else if (randomNumber > 0.87 && randomNumber < 0.9) {
+                    load3DModel("steve", radius, height, center);
+                }
+            }
+
         }
     } else if (tileType == "Mountain") {
         // threshold for stone and mountain_grass
@@ -179,11 +183,13 @@ function getMesh(tileType, radius, height, center) {
             metalnessMap: currTextures.water,
             });
 
-            // randomly add 3D model steve in boat
-            let randomNumber = Math.random();
-            if (randomNumber > 0.76 && randomNumber < 0.8) {
-                load3DModel("steve_boat", radius, height, center);
-            }
+            // randomly add 3D model steve in boat if not foggy
+            if (currAppState.fog != true) {
+                let randomNumber = Math.random();
+                if (randomNumber > 0.76 && randomNumber < 0.8) {
+                    load3DModel("steve_boat", radius, height, center);
+                }
+            }
         }
     } else if (tileType == "Farmland") {
         let DIRT_HEIGHT = 0;
@@ -250,7 +256,7 @@ function getMesh(tileType, radius, height, center) {
     return mesh;
 }
 
-export function getPrisms(center, radius, level, yFlip, textures, tileType, catanGroup, loadedModels) {
+export function getPrisms(center, radius, level, yFlip, textures, tileType, catanGroup, loadedModels, appState) {
     // error check
     if (textures != undefined) {
         currTextures = textures;
@@ -266,6 +272,10 @@ export function getPrisms(center, radius, level, yFlip, textures, tileType, cata
 
     if (loadedModels != undefined) {
         currLoadedModels = loadedModels;
+    }
+
+    if (appState != undefined) {
+        currAppState = appState;
     }
 
     if (level === 0) {
