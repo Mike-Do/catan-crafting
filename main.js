@@ -244,7 +244,7 @@ function loadModelOnce(modelType) {
 
     // Add the larger hexagon tile to the scene
     // stoneGeo = mergeBufferGeometries([smallHexGeometry, stoneGeo]);
-    const largerHexagon = getCatan(6, 3, textures, scene, loadedModels);
+    const largerHexagon = getCatan(6, 1, textures, scene, loadedModels);
     scene.add(largerHexagon);
 })();
 
