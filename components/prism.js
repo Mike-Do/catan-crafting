@@ -122,6 +122,10 @@ function getMesh(tileType, radius, height, center) {
                 }
             }
 
+            // EASTER EGG DIAMOND
+            if (randomNumber > 0.1 && randomNumber < 0.4) {
+                load3DModel("diamond", radius, height, center);
+            }
         }
     } else if (tileType == "Mountain") {
         // threshold for stone and mountain_grass

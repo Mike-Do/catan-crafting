@@ -154,7 +154,8 @@ function loadModelOnce(modelType) {
         loadModelOnce('steve'),
         loadModelOnce('steve_boat'),
         loadModelOnce('stone'),
-        loadModelOnce('tree')
+        loadModelOnce('tree'),
+        loadModelOnce('diamond')
     ]);
 
     const largerHexagon = getCatan(6, appState.detail, textures, loadedModels, appState);
