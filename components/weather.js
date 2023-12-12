@@ -136,9 +136,11 @@ export default class Weather {
 
         if (this.rain === null && this.appState.rain) {
             this.rain = this.addRain();
+            this.appState.rainGoHomeGroup.visible = false;
         } else if (this.rain !== null && !this.appState.rain) {
             this.removeObject(this.rain);
             this.rain = null;
+            this.appState.rainGoHomeGroup.visible = true;
         }
 
         if (this.clouds === null && this.appState.cloud) {

@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { getTile } from './tile';
 
 export function getCatan(radius, level, textures, loadedModels, appState) {
+    appState.rainGoHomeGroup = new THREE.Group();
     const catanGroup = new THREE.Group();
     const tiles = [
         { x: 0, y: 0, z: 0, type: "Grassland" },
@@ -32,6 +33,9 @@ export function getCatan(radius, level, textures, loadedModels, appState) {
         hexMat.color.setHex(0xcca471);
         catanGroup.add(hex);
     });
+
+    catanGroup.add(appState.rainGoHomeGroup);
+    appState.rainGoHomeGroup.visible = !appState.rain;
 
     // create rectangular prism for the base of the catan board in blue
     return [catanGroup, centers];
