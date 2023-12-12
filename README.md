@@ -1,9 +1,12 @@
-# Catan Crafting
-
 <p align="center">
   <img width="767" alt="Screenshot 2023-12-12 at 2 18 10 PM" src="https://github.com/Mike-Do/catan-crafting/assets/24444124/632c67f4-054b-4925-a350-bccd422435f2">
 </p>
 
+# Catan Crafting
+
+> **Click the Catan emojis for Website Link: [🧱🌾🪵🪨🐑](https://catan-crafting.vercel.app)**
+
+Use the GUI, WASD, and Mouse to create and navigate your own mini Catan boards!
 
 # Set up
 
