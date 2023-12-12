@@ -267,6 +267,7 @@ function animate() {
         // camera.lookAt(new THREE.Vector3(...tileCenters[appState.lookAt]));
         const targetPosition = new THREE.Vector3(...tileCenters[appState.lookAt]);
         camera.lookAt(targetPosition);
+        controls.target.set(targetPosition.x, targetPosition.y, targetPosition.z);
     }
 
     // camera rotation
@@ -275,7 +276,6 @@ function animate() {
         angle += 0.005;
         camera.position.x = radius * Math.cos(angle);
         camera.position.z = radius * Math.sin(angle);
-        // camera.lookAt(new THREE.Vector3(0, 0, 0));
     }
     if (keyState.w) camera.position.z -= 0.5;
     if (keyState.s) camera.position.z += 0.5;
