@@ -8,7 +8,7 @@ let MAX_HEIGHT = 2; // adjust this for different types of terrains
 let currGeo = new THREE.BoxGeometry(0, 0, 0);
 let currTextures;
 let currTileType;
-let currScene;
+let currGroup;
 let currLoadedModels;
 
 // Function to position and scale the loaded model
@@ -56,7 +56,8 @@ function load3DModel(modelType, radius, height, center) {
 
     model.position.set(center[0], newPositionY, center[2]);
         
-    currScene.add(model);
+    // add the 3D model to the group
+    currGroup.add(model);
 }
 
 // helper function that returns height randomly generated with perlin noise
@@ -249,7 +250,7 @@ function getMesh(tileType, radius, height, center) {
     return mesh;
 }
 
-export function getPrisms(center, radius, level, yFlip, textures, tileType, scene, loadedModels) {
+export function getPrisms(center, radius, level, yFlip, textures, tileType, catanGroup, loadedModels) {
     // error check
     if (textures != undefined) {
         currTextures = textures;
@@ -259,8 +260,8 @@ export function getPrisms(center, radius, level, yFlip, textures, tileType, scen
         currTileType = tileType;
     }
 
-    if (scene != undefined) {
-        currScene = scene;
+    if (catanGroup != undefined) {
+        currGroup = catanGroup;
     }
 
     if (loadedModels != undefined) {

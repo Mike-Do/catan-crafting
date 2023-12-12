@@ -5,6 +5,9 @@ export function addGUI(state) {
 
     gui.add( state, 'detail', 0, 5, 1 );
 
+    // add a different reload button for Catan
+    // gui.add( state, 'reload Catan' );
+
     gui.add( state, 'focus', { Hex0: 0, Normal: 1, Fast: 5 } );
 
     const weather = gui.addFolder( 'Weather' );
