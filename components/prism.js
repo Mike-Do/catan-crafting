@@ -60,6 +60,11 @@ function load3DModel(modelType, radius, height, center) {
     }
 
     model.position.set(center[0], newPositionY, center[2]);
+
+    if (modelType === "sheep" || modelType === "steve") {
+        currAppState.rainGoHomeGroup.add(model);
+        return;
+    }
         
     // add the 3D model to the group
     currGroup.add(model);
@@ -118,12 +123,10 @@ function getMesh(tileType, radius, height, center) {
 
             // randomly add 3D model sheep and steve if not raining
             let randomNumber = Math.random();
-            if (currAppState.rain != true) {
-                if (randomNumber > 0.7 && randomNumber < 0.8) {
-                    load3DModel("sheep", radius, height, center);
-                } else if (randomNumber > 0.87 && randomNumber < 0.9) {
-                    load3DModel("steve", radius, height, center);
-                }
+            if (randomNumber > 0.7 && randomNumber < 0.8) {
+                load3DModel("sheep", radius, height, center);
+            } else if (randomNumber > 0.87 && randomNumber < 0.9) {
+                load3DModel("steve", radius, height, center);
             }
 
             // EASTER EGG DIAMOND
@@ -291,7 +294,6 @@ export function getPrisms(center, radius, level, yFlip, textures, tileType, cata
         let height = getPerlinNoise(center, currTileType);
         
         center[1] += height / 2;
-
         const mesh = getMesh(currTileType, radius, height, center);
         mesh.position.set(...center);
         mesh.rotation.set(0, yFlip ? Math.PI : 0, 0);

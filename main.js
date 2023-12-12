@@ -20,6 +20,7 @@ const appState = {
     },
     autoRotate: true,
     lookAt: 0,
+    rainGoHomeGroup: null,
 };
 addGUI(appState);
 
