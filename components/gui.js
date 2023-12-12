@@ -16,8 +16,8 @@ export function addGUI(state) {
     weather.add( state, 'lightning' );
     weather.add( state, 'fog' );
 
-    gui.add( state, 'reload' );
     gui.add( state, 'lookAt' , [0, 1, 2, 3, 4, 5, 6] );
     gui.add( state, 'autoRotate' );
+    gui.add( state, 'reload' );
     
 }
