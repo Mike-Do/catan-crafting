@@ -7,6 +7,7 @@ import { addGUI } from './components/gui';
 
 // GUI
 var weather;
+var catan;
 const appState = {
     detail: 3,
     focus: 0,
@@ -15,7 +16,7 @@ const appState = {
     lightning: true,
     fog: true,
     reload: function() {
-        reload();
+        reloadCatan();
         weather.updateState();
     }
 };
@@ -24,6 +25,7 @@ addGUI(appState);
 const scene = new THREE.Scene();
 let camera;
 let controls;
+let textures;
 generateCamera();
 
 const renderer = new THREE.WebGLRenderer();
@@ -131,7 +133,7 @@ function loadModelOnce(modelType) {
 // Load textures and 3D models asynchronously on the board
 (async function () {
     // wait for textures to load before rendering scene
-    let textures = {
+    textures = {
         stone: await new THREE.TextureLoader().loadAsync('./assets/stone.png'),
         grass: await new THREE.TextureLoader().loadAsync('./assets/grass.png'),
         mountainGrass: await new THREE.TextureLoader().loadAsync('./assets/mountain_grass.png'),
@@ -156,32 +158,37 @@ function loadModelOnce(modelType) {
         loadModelOnce('tree')
     ]);
     const largerHexagon = getCatan(6, appState.detail, textures, scene, loadedModels);
+    catan = largerHexagon;
     scene.add(largerHexagon);
 })();
 
 weather = new Weather(scene, camera, appState);
 
-function reload() {
-removeObject(catan);
+function reloadCatan() {
+    removeObject(catan);
+
+    // re-instantiate the catan board with the new level of detail
+    catan = getCatan(6, appState.detail, textures, scene, loadedModels);
+    scene.add(catan);
 }
 
 function removeObject(object3D) {
-if (!(object3D instanceof THREE.Object3D)) return false;
+    if (!(object3D instanceof THREE.Object3D)) return false;
 
-// for better memory management and performance
-if (object3D.geometry) object3D.geometry.dispose();
+    // for better memory management and performance
+    if (object3D.geometry) object3D.geometry.dispose();
 
-if (object3D.material) {
-if (object3D.material instanceof Array) {
-// for better memory management and performance
-object3D.material.forEach(material => material.dispose());
-} else {
-// for better memory management and performance
-object3D.material.dispose();
-}
-}
-object3D.removeFromParent(); // the parent might be the scene or another Object3D, but it is sure to be removed this way
-return true;
+    if (object3D.material) {
+    if (object3D.material instanceof Array) {
+    // for better memory management and performance
+    object3D.material.forEach(material => material.dispose());
+    } else {
+    // for better memory management and performance
+    object3D.material.dispose();
+    }
+    }
+    object3D.removeFromParent(); // the parent might be the scene or another Object3D, but it is sure to be removed this way
+    return true;
 }
 
 camera.position.z = 10;

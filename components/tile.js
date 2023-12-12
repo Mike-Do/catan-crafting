@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { getPrisms } from './prism.js';
 
-export function getTile(center, radius, level, textures, tileType, scene, loadedModels) {
+export function getTile(center, radius, level, textures, tileType, catanGroup, loadedModels) {
     const prismMeshes = [];
     
     const prismData = [
@@ -19,7 +19,7 @@ export function getTile(center, radius, level, textures, tileType, scene, loaded
         prismCenter[1] += radius * prismData[i].cOff[1];
         prismCenter[2] += radius * prismData[i].cOff[2];
 
-        prismMeshes.push(...getPrisms(prismCenter, radius / Math.sqrt(3), level, prismData[i].yFlip, textures, tileType, scene, loadedModels));
+        prismMeshes.push(...getPrisms(prismCenter, radius / Math.sqrt(3), level, prismData[i].yFlip, textures, tileType, catanGroup, loadedModels));
     }
 
     return prismMeshes;

@@ -14,7 +14,7 @@ export function getCatan(radius, level, textures, scene, loadedModels) {
     ];
 
     tiles.forEach(tile => {
-        const tileMesh = getTile([tile.x * radius * 1.2, tile.y * radius, tile.z * radius * 1.2], radius, level, textures, tile.type, scene, loadedModels);
+        const tileMesh = getTile([tile.x * radius * 1.2, tile.y * radius, tile.z * radius * 1.2], radius, level, textures, tile.type, catanGroup, loadedModels);
         // tileMesh.position.set(tile.x, tile.y, tile.z);
         console.log([tile.x * radius * 1.2, tile.y * radius, tile.z * radius * 1.2])
         catanGroup.add(...tileMesh);
