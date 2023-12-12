@@ -1,13 +1,24 @@
 import * as THREE from 'three';
-import GUI from 'lil-gui';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { mergeBufferGeometries } from 'https://cdn.skypack.dev/three-stdlib@2.8.5/utils/BufferGeometryUtils';
 import { getCatan } from './components/catan';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import Weather from './components/weather';
+import { addGUI } from './components/gui';
 
 // GUI
-const gui = new GUI();
-gui.add( document, 'title' );
+var weather;
+const appState = {
+    detail: 3,
+    cloud: true,
+    rain: true,
+    lightning: true,
+    fog: true,
+    reload: function() {
+        weather.updateState();
+    }
+};
+addGUI(appState);
 
 const scene = new THREE.Scene();
 let camera;
@@ -174,100 +185,10 @@ function generateCamera() {
     camera.up.set(0, 1, 0);
     camera.lookAt(new THREE.Vector3(0, 0, 0));
 
-    scene.add(camera);
+    scene.add
+    (camera);
   }
 
-// HEX GEOMETRY V1
-// let mat = new MeshPhysicalMaterial({
-//     // envMap: envmap,
-//     // envMapIntensity: 0.135,
-//     flatShading: true,
-//     map
-// });
-
-// Array to hold smaller hexagon meshes
-// const smallHexagons = [];
-
-// // FUNCTIONS FOR GENERATING THE BOARD (7 HEXAGONS)
-// // Function to create a single small hexagon
-
-// function createSmallHexagon(x, y, z, mat, geo) {
-//     const smallHexagonMesh = new THREE.Mesh(geo, mat);
-//     smallHexagonMesh.position.set(x, y, z);
-//     smallHexagonMesh.castShadow = true; //default is false
-//     smallHexagonMesh.receiveShadow = true; //default
-//     return smallHexagonMesh;
-// }
-
-// // Function to create the larger hexagon tile
-// function createHexagonTile() {
-//     const hexagonGroup = new THREE.Group();
-
-//     // Define positions for smaller hexagons forming the larger hexagon
-//     const positions = [
-// 		[-Math.sqrt(3), 0, 0],
-// 		[0, 0, 0],
-// 		[Math.sqrt(3)/2, 0, 1.5],
-// 		[-Math.sqrt(3)/2, 0, 1.5],
-// 		[Math.sqrt(3), 0, 0],
-// 		[Math.sqrt(3)/2, 0, -1.5],
-//         [-Math.sqrt(3) / 2, 0, -1.5]
-//     ];
-
-//     // Create smaller hexagons at specified positions
-//     for (let i = 0; i < positions.length; i++) {
-//         const [x, y, z] = positions[i];
-
-//         // const height = simplex.noise2D(0.99, 0.99) * 5;
-
-//         // let mat = new THREE.MeshStandardMaterial({ map: textures.stone });
-//         // let geo = getGeo(height);
-
-//         // add noise to the height of each hexagon
-//         const smallHexagon = createSmallHexagon(x, y, z);
-//         smallHexagons.push(smallHexagon);
-//         hexagonGroup.add(smallHexagon);
-
-//         // // randomly add stones
-//         // if (Math.random() > 0.5) {
-//         //     const stoneGeo = stone(0, {x, y, z});
-//         //     const stoneMesh = new THREE.Mesh(stoneGeo, new THREE.MeshBasicMaterial({color: 0x000000}));
-//         //     hexagonGroup.add(stoneMesh);
-//         // }
-
-//         // // randomly add trees
-//         // if (Math.random() > 0.5) {
-//         //     const treeGeos = tree(0, {x, y, z});
-//         //     // loop through treeGeos and add each to hexagonGroup
-//         //     treeGeos.forEach(treeGeo => {
-//         //         const treeMesh = new THREE.Mesh(treeGeo, new THREE.MeshBasicMaterial({color: 0x00ff00}));
-//         //         hexagonGroup.add(treeMesh);
-//         //     })
-//         // }
-//     }
-
-//     return hexagonGroup;
-// }
-
-// function getGeo(height) { // TODO: take in height and position as parameters (AFTER PERLIN)
-//     // let geo = hexGeometry(height, position); // BRING THIS BACK AFTER PERLIN NOISE
-//     let geo = hexGeometry(height);
-  
-//     if(height > STONE_HEIGHT) {
-//       stoneGeo = mergeBufferGeometries([geo, stoneGeo]);
-  
-//       if(Math.random() > 0.8) {
-//         stoneGeo = mergeBufferGeometries([stoneGeo, stone(height, position)]);
-//       }
-//       return stoneGeo;
-
-//     } else if(height > GRASS_HEIGHT) {
-//       grassGeo = mergeBufferGeometries([geo, grassGeo]);
-//       return grassGeo;
-//     }
-
-//     return geo;
-// }
 
 const loader = new GLTFLoader();
 let loadedModels = {}; // Object to store loaded models
@@ -327,6 +248,8 @@ function loadModelOnce(modelType) {
     scene.add(largerHexagon);
 })();
 
+weather = new Weather(scene, camera, appState);
+
 
 // Function to initiate Vanta.js background
 // function initiateVantaBackground() {
@@ -370,44 +293,44 @@ camera.position.z = 10;
 //     return [geo, geo2, geo3]
 // }
 
-function clouds() {
-    let geo = new THREE.SphereGeometry(0, 0, 0); 
-    // let count = Math.floor(Math.pow(Math.random(), 0.45) * 4);
-    let count = 3;
+// function clouds() {
+//     let geo = new THREE.SphereGeometry(0, 0, 0); 
+//     // let count = Math.floor(Math.pow(Math.random(), 0.45) * 4);
+//     let count = 3;
   
-    for(let i = 0; i < count; i++) {
-      const puff1 = new THREE.SphereGeometry(1.2, 7, 7);
-      const puff2 = new THREE.SphereGeometry(1.5, 7, 7);
-      const puff3 = new THREE.SphereGeometry(0.9, 7, 7);
+//     for(let i = 0; i < count; i++) {
+//       const puff1 = new THREE.SphereGeometry(1.2, 7, 7);
+//       const puff2 = new THREE.SphereGeometry(1.5, 7, 7);
+//       const puff3 = new THREE.SphereGeometry(0.9, 7, 7);
      
-      puff1.translate(-1.85, Math.random() * 0.3, 0);
-      puff2.translate(0,     Math.random() * 0.3, 0);
-      puff3.translate(1.85,  Math.random() * 0.3, 0);
+//       puff1.translate(-1.85, Math.random() * 0.3, 0);
+//       puff2.translate(0,     Math.random() * 0.3, 0);
+//       puff3.translate(1.85,  Math.random() * 0.3, 0);
 
-      // translate each puff by   Math.random() * 20 - 10, 
-      // Math.random() * 7 + 7, 
-      // Math.random() * 20 - 10 for x, y, z respectively
-      puff1.translate(Math.random() * 20 - 10, Math.random() * 7 + 7, Math.random() * 20 - 10);
-      puff2.translate(Math.random() * 20 - 10, Math.random() * 7 + 7, Math.random() * 20 - 10);
-      puff3.translate(Math.random() * 20 - 10, Math.random() * 7 + 7, Math.random() * 20 - 10);
+//       // translate each puff by   Math.random() * 20 - 10, 
+//       // Math.random() * 7 + 7, 
+//       // Math.random() * 20 - 10 for x, y, z respectively
+//       puff1.translate(Math.random() * 20 - 10, Math.random() * 7 + 7, Math.random() * 20 - 10);
+//       puff2.translate(Math.random() * 20 - 10, Math.random() * 7 + 7, Math.random() * 20 - 10);
+//       puff3.translate(Math.random() * 20 - 10, Math.random() * 7 + 7, Math.random() * 20 - 10);
     
-      // then rotate each puff by Math.random() * Math.PI * 2 for y
-      puff1.rotateY(Math.random() * Math.PI * 2);
-      puff2.rotateY(Math.random() * Math.PI * 2);
-      puff3.rotateY(Math.random() * Math.PI * 2);
+//       // then rotate each puff by Math.random() * Math.PI * 2 for y
+//       puff1.rotateY(Math.random() * Math.PI * 2);
+//       puff2.rotateY(Math.random() * Math.PI * 2);
+//       puff3.rotateY(Math.random() * Math.PI * 2);
 
-      return [puff1, puff2, puff3];
-    }
-}
+//       return [puff1, puff2, puff3];
+//     }
+// }
 
 // add clouds to scene
-const cloudGroup = new THREE.Group();
-const cloudGeos = clouds();
-cloudGeos.forEach(cloudGeo => {
-    // make color of cloud white
-    const cloudMesh = new THREE.Mesh(cloudGeo, new THREE.MeshBasicMaterial({color: 0x000}));
-    cloudGroup.add(cloudMesh);
-})
+// const cloudGroup = new THREE.Group();
+// const cloudGeos = clouds();
+// cloudGeos.forEach(cloudGeo => {
+//     // make color of cloud white
+//     const cloudMesh = new THREE.Mesh(cloudGeo, new THREE.MeshBasicMaterial({color: 0x000}));
+//     cloudGroup.add(cloudMesh);
+// })
 
 // add WASD controls
 document.addEventListener('keydown', onDocumentKeyDown, false);
@@ -478,6 +401,8 @@ function animate() {
     camera.position.x = radius * Math.cos(angle);
     camera.position.z = radius * Math.sin(angle);
     camera.lookAt(new THREE.Vector3(0, 0, 0));
+
+    weather.update();
 
 	renderer.render( scene, camera );
 }
