@@ -37,7 +37,7 @@ export default class Weather {
                 let cloud = new THREE.Mesh(cloudGeo, cloudMaterial);
                 cloud.position.set(
                     Math.random() * 40 - 20,
-                    7,
+                    8,
                     Math.random() * 40 - 20
                 );
                 cloud.lookAt(camera.position);
@@ -84,6 +84,7 @@ export default class Weather {
     }
 
     update() {
+        this.updateState();
 
         if (this.clouds !== null) {
             this.clouds.forEach(p => {

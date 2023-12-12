@@ -17,7 +17,6 @@ const appState = {
     fog: false,
     reload: function() {
         reloadCatan();
-        weather.updateState();
     },
     autoRotate: true,
     lookAt: 0,
