@@ -55,6 +55,10 @@ function load3DModel(modelType, radius, height, center) {
         newPositionY = center[1] - scaledSize.y / 2;
     }
 
+    if (modelType === "diamond") {
+        newPositionY += scaledSize.y / 2;
+    }
+
     model.position.set(center[0], newPositionY, center[2]);
         
     // add the 3D model to the group
@@ -123,7 +127,7 @@ function getMesh(tileType, radius, height, center) {
             }
 
             // EASTER EGG DIAMOND
-            if (randomNumber > 0.1 && randomNumber < 0.4) {
+            if (randomNumber > 0.1 && randomNumber < 0.11) {
                 load3DModel("diamond", radius, height, center);
             }
         }
