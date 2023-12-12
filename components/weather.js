@@ -6,18 +6,18 @@ export default class Weather {
         this.scene = scene;
         this.camera = camera;
         this.appState = appState;
-        this.noLightning = false;
-        this.noFog = false;
+        this.noLightning = true;
+        this.noFog = true;
 
         this.ambient = new THREE.AmbientLight(0x555555);
         scene.add(this.ambient);
 
-        this.fog = new THREE.Fog( 0xcccccc, 1, 60 );
+        this.fog = new THREE.Fog( 0xcccccc, 1000, 1000 );
         scene.fog = this.fog;
 
-        this.rain = this.addRain();
+        this.rain = null;
 
-        this.clouds = this.addClouds();
+        this.clouds = null;
     }
 
     addClouds() {
