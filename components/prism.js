@@ -6,21 +6,15 @@ const simplex = new SimplexNoise();
 let MAX_HEIGHT = 2; // adjust this for different types of terrains
 
 let currGeo = new THREE.BoxGeometry(0, 0, 0);
-let currTextures;
-let currTileType;
-let currGroup;
-let currLoadedModels;
-let currAppState;
-
 // Function to position and scale the loaded model
-function load3DModel(modelType, radius, height, center) {
+function load3DModel(modelType, radius, height, center, catanGroup, loadedModels, appState) {
     // Handle the case where the model hasn't been loaded yet
-    if (!currLoadedModels[modelType]) {
+    if (!loadedModels[modelType]) {
         console.error(`Model type ${modelType} not loaded yet`);
         return;
     }
 
-    const model = currLoadedModels[modelType].clone(); // Clone the loaded model
+    const model = loadedModels[modelType].clone(); // Clone the loaded model
 
     // get original size of 3d model
     let bbox = new THREE.Box3().setFromObject(model);
@@ -62,15 +56,15 @@ function load3DModel(modelType, radius, height, center) {
     model.position.set(center[0], newPositionY, center[2]);
 
     if (modelType === "sheep" || modelType === "steve") {
-        currAppState.rainGoHomeGroup.add(model);
+        appState.rainGoHomeGroup.add(model);
         return;
     } else if (modelType === "steve_boat") {
-        currAppState.fogGoHomeGroup.add(model);
+        appState.fogGoHomeGroup.add(model);
         return;
     }
 
     // add the 3D model to the group
-    currGroup.add(model);
+    catanGroup.add(model);
 }
 
 // helper function that returns height randomly generated with perlin noise
@@ -101,7 +95,7 @@ function getPerlinNoise(center, tileType) {
 }
 
 // helper function that returns a mesh based on the tile type
-function getMesh(tileType, radius, height, center) {
+function getMesh(tileType, radius, height, center, textures, catanGroup, loadedModels, appState) {
     // initialize geo and material
     let geo = new THREE.CylinderGeometry(radius * 0.95, radius * 0.95, height, 3);
     let material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
@@ -115,57 +109,57 @@ function getMesh(tileType, radius, height, center) {
             geo = mergeBufferGeometries([geo, currGeo]);
             material = new THREE.MeshPhysicalMaterial({
                 flatShading: true,
-                map: currTextures.stone
+                map: textures.stone
             });
         } else if (height > GRASS_HEIGHT) {
             geo = mergeBufferGeometries([geo, currGeo]);
             material = new THREE.MeshPhysicalMaterial({
                 flatShading: true,
-                map: currTextures.grass
+                map: textures.grass
             });
 
             // randomly add 3D model sheep and steve if not raining
             let randomNumber = Math.random();
             if (randomNumber > 0.7 && randomNumber < 0.8) {
-                load3DModel("sheep", radius, height, center);
+                load3DModel("sheep", radius, height, center, catanGroup, loadedModels, appState);
             } else if (randomNumber > 0.87 && randomNumber < 0.9) {
-                load3DModel("steve", radius, height, center);
+                load3DModel("steve", radius, height, center, catanGroup, loadedModels, appState);
             }
 
             // EASTER EGG DIAMOND
             if (randomNumber > 0.1 && randomNumber < 0.101) {
-                load3DModel("diamond", radius, height, center);
+                load3DModel("diamond", radius, height, center, catanGroup, loadedModels, appState);
             }
         }
     } else if (tileType == "Mountain") {
         // threshold for stone and mountain_grass
-        MAX_HEIGHT = 5;
-        let STONE_HEIGHT = MAX_HEIGHT * 0.2;
+        MAX_HEIGHT = 5; // max height for mountain
         let GRASS_HEIGHT = 0;
+        let STONE_HEIGHT = MAX_HEIGHT * 0.2;
         let SNOW_HEIGHT = MAX_HEIGHT * 0.8;
 
         if (height > GRASS_HEIGHT && height < STONE_HEIGHT) {
             geo = mergeBufferGeometries([geo, currGeo]);
             material = new THREE.MeshPhysicalMaterial({
                 flatShading: true,
-                map: currTextures.mountainGrass
+                map: textures.mountainGrass
             });
         } else if (height >= STONE_HEIGHT && height < SNOW_HEIGHT) {
             geo = mergeBufferGeometries([geo, currGeo]);
             material = new THREE.MeshPhysicalMaterial({
                 flatShading: true,
-                map: currTextures.stone
+                map: textures.stone
             });
 
             let randomNumber = Math.random();
             if (randomNumber > 0.7 && randomNumber < 0.8) {
-                load3DModel("stone", radius, height, center);
+                load3DModel("stone", radius, height, center, catanGroup, loadedModels, appState);
             }
         } else if (height >= SNOW_HEIGHT) {
             geo = mergeBufferGeometries([geo, currGeo]);
             material = new THREE.MeshPhysicalMaterial({
                 flatShading: true,
-                map: currTextures.snow
+                map: textures.snow
             });
         }
     } else if (tileType == "Riverland") {
@@ -177,19 +171,19 @@ function getMesh(tileType, radius, height, center) {
             geo = mergeBufferGeometries([geo, currGeo]);
             material = new THREE.MeshPhysicalMaterial({
                 flatShading: true,
-                map: currTextures.riverlandStone
+                map: textures.riverlandStone
             });
         } else if (height > GRASS_HEIGHT) {
             geo = mergeBufferGeometries([geo, currGeo]);
             material = new THREE.MeshPhysicalMaterial({
                 flatShading: true,
-                map: currTextures.riverlandGrass
+                map: textures.riverlandGrass
             });
 
             // randomly add 3D model trees
             let randomNumber = Math.random();
             if (randomNumber > 0.7 && randomNumber < 0.8) {
-                load3DModel("tree", radius, height, center);
+                load3DModel("tree", radius, height, center, catanGroup, loadedModels, appState);
             }
         } else if (height > WATER_HEIGHT) {
             geo = mergeBufferGeometries([geo, currGeo]);
@@ -201,14 +195,14 @@ function getMesh(tileType, radius, height, center) {
                 thickness: 2,
                 roughness: 1,
                 metalness: 0.025,
-                roughnessMap: currTextures.water,
-                metalnessMap: currTextures.water,
+                roughnessMap: textures.water,
+                metalnessMap: textures.water,
             });
 
             // randomly add 3D model steve in boat if not foggy
             let randomNumber = Math.random();
             if (randomNumber > 0.76 && randomNumber < 0.8) {
-                load3DModel("steve_boat", radius, height, center);
+                load3DModel("steve_boat", radius, height, center, catanGroup, loadedModels, appState);
             }
         }
     } else if (tileType == "Farmland") {
@@ -220,25 +214,25 @@ function getMesh(tileType, radius, height, center) {
             geo = mergeBufferGeometries([geo, currGeo]);
             material = new THREE.MeshPhysicalMaterial({
                 flatShading: true,
-                map: currTextures.dirt
+                map: textures.dirt
             });
 
             // randomly add 3D model sheep
             let randomNumber = Math.random();
             if (randomNumber > 0.6 && randomNumber < 0.8) {
-                load3DModel("hay", radius, height, center);
+                load3DModel("hay", radius, height, center, catanGroup, loadedModels, appState);
             }
         } else if (height > GRASS_HEIGHT && height < HAY_HEIGHT) {
             geo = mergeBufferGeometries([geo, currGeo]);
             material = new THREE.MeshPhysicalMaterial({
                 flatShading: true,
-                map: currTextures.farmGrass
+                map: textures.farmGrass
             });
         } else if (height > HAY_HEIGHT) {
             geo = mergeBufferGeometries([geo, currGeo]);
             material = new THREE.MeshPhysicalMaterial({
                 flatShading: true,
-                map: currTextures.hay
+                map: textures.hay
             });
         }
     } else if (tileType == "Clayland") {
@@ -249,19 +243,19 @@ function getMesh(tileType, radius, height, center) {
             geo = mergeBufferGeometries([geo, currGeo]);
             material = new THREE.MeshPhysicalMaterial({
                 flatShading: true,
-                map: currTextures.clayStone
+                map: textures.clayStone
             });
         } else if (height >= CLAY_HEIGHT) {
             geo = mergeBufferGeometries([geo, currGeo]);
             material = new THREE.MeshPhysicalMaterial({
                 flatShading: true,
-                map: currTextures.clay
+                map: textures.clay
             });
 
             // randomly add 3D model clay
             let randomNumber = Math.random();
             if (randomNumber > 0.73 && randomNumber < 0.8) {
-                load3DModel("clay", radius, height, center);
+                load3DModel("clay", radius, height, center, catanGroup, loadedModels, appState);
             }
         }
     }
@@ -277,33 +271,12 @@ function getMesh(tileType, radius, height, center) {
 }
 
 export function getPrisms(center, radius, level, yFlip, textures, tileType, catanGroup, loadedModels, appState) {
-    // error check
-    if (textures != undefined) {
-        currTextures = textures;
-    }
-
-    if (tileType != undefined) {
-        currTileType = tileType;
-    }
-
-    if (catanGroup != undefined) {
-        currGroup = catanGroup;
-    }
-
-    if (loadedModels != undefined) {
-        currLoadedModels = loadedModels;
-    }
-
-    if (appState != undefined) {
-        currAppState = appState;
-    }
-
     if (level === 0) {
         // add simplex noise
-        let height = getPerlinNoise(center, currTileType);
+        let height = getPerlinNoise(center, tileType);
 
         center[1] += height / 2;
-        const mesh = getMesh(currTileType, radius, height, center);
+        const mesh = getMesh(tileType, radius, height, center, textures, catanGroup, loadedModels, appState);
         mesh.position.set(...center);
         mesh.rotation.set(0, yFlip ? Math.PI : 0, 0);
         return [mesh];
