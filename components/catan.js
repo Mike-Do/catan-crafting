@@ -12,13 +12,13 @@ export function getCatan(radius, level, textures, loadedModels, appState) {
         { x: 1.5, y: 0, z: -Math.sqrt(3)/2, type: "Riverland"},
         { x: -1.5, y: 0, z: -Math.sqrt(3)/2, type: "Riverland" },
     ];
-
+    const centers = [];
     tiles.forEach(tile => {
         const tileMesh = getTile([tile.x * radius * 1.2, tile.y * radius, tile.z * radius * 1.2], radius, level, textures, tile.type, catanGroup, loadedModels, appState);
         // tileMesh.position.set(tile.x, tile.y, tile.z);
         console.log([tile.x * radius * 1.2, tile.y * radius, tile.z * radius * 1.2])
         catanGroup.add(...tileMesh);
-
+        centers.push([tile.x * radius * 1.2, tile.y * radius, tile.z * radius * 1.2]);
         // create larger hexes to go underneath the tiles
         let hexGeo = new THREE.CylinderGeometry(radius * 1.3, radius * 1.3, 1, 6);
         let hexMat = new THREE.MeshBasicMaterial({ color: 0x000000 });
@@ -34,6 +34,6 @@ export function getCatan(radius, level, textures, loadedModels, appState) {
     });
 
     // create rectangular prism for the base of the catan board in blue
-    return catanGroup;
+    return [catanGroup, centers];
 }
 

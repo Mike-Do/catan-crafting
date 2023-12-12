@@ -8,7 +8,7 @@ export function addGUI(state) {
     // add a different reload button for Catan
     // gui.add( state, 'reload Catan' );
 
-    gui.add( state, 'focus', { Hex0: 0, Normal: 1, Fast: 5 } );
+    // gui.add( state, 'focus', { Hex0: 0, Normal: 1, Fast: 5 } );
 
     const weather = gui.addFolder( 'Weather' );
     weather.add( state, 'cloud' );
@@ -17,6 +17,7 @@ export function addGUI(state) {
     weather.add( state, 'fog' );
 
     gui.add( state, 'reload' );
+    gui.add( state, 'lookAt' , [0, 1, 2, 3, 4, 5, 6] );
+    gui.add( state, 'autoRotate' );
     
-
 }

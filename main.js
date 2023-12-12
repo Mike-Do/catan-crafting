@@ -10,7 +10,7 @@ var weather;
 var catan;
 const appState = {
     detail: 2,
-    focus: 0,
+    // focus: 0,
     cloud: true,
     rain: true,
     lightning: true,
@@ -18,7 +18,9 @@ const appState = {
     reload: function() {
         reloadCatan();
         weather.updateState();
-    }
+    },
+    autoRotate: true,
+    lookAt: 0,
 };
 addGUI(appState);
 
@@ -129,6 +131,7 @@ function loadModelOnce(modelType) {
     });
 }
 
+var tileCenters = [];
 // Load textures and 3D models asynchronously on the board
 (async function () {
     // wait for textures to load before rendering scene
@@ -157,8 +160,9 @@ function loadModelOnce(modelType) {
         loadModelOnce('tree')
     ]);
 
-    const largerHexagon = getCatan(6, appState.detail, textures, loadedModels, appState);
+    const [largerHexagon, centers] = getCatan(6, appState.detail, textures, loadedModels, appState);
     catan = largerHexagon;
+    tileCenters = centers;
     scene.add(largerHexagon);
 })();
 
@@ -166,9 +170,9 @@ weather = new Weather(scene, camera, appState);
 
 function reloadCatan() {
     removeObject(catan);
-
+    var c;
     // re-instantiate the catan board with the new level of detail
-    catan = getCatan(6, appState.detail, textures, loadedModels, appState);
+    [catan, c] = getCatan(6, appState.detail, textures, loadedModels, appState);
     scene.add(catan);
 }
 
@@ -199,7 +203,7 @@ document.addEventListener('keyup', onDocumentKeyUp, false);
 
 let angle = 0;
 let radius = 10;
-let autoRotate = true;
+// let autoRotate = true;
 let keyState = { w: false, a: false, s: false, d: false };
 
 function startAutoRotate() {
@@ -208,11 +212,11 @@ function startAutoRotate() {
         angle += Math.PI * 2;
     }
     radius = Math.sqrt(camera.position.x * camera.position.x + camera.position.z * camera.position.z);
-    autoRotate = true;
+    appState.autoRotate = true;
 }
 
 function stopAutoRotate() {
-    autoRotate = false;
+    appState.autoRotate = false;
 }
 
 controls.addEventListener('start', stopAutoRotate);
@@ -258,13 +262,19 @@ function animate() {
 	requestAnimationFrame( animate );
     controls.update();
 
+    if (tileCenters[appState.lookAt] !== undefined) {
+        // camera.lookAt(new THREE.Vector3(...tileCenters[appState.lookAt]));
+        const targetPosition = new THREE.Vector3(...tileCenters[appState.lookAt]);
+        camera.lookAt(targetPosition);
+    }
+
     // camera rotation
     // radius is the curent distance from the center of the scene
-    if (autoRotate) {
-        angle += 0.01;
+    if (appState.autoRotate && appState.lookAt === 0) {
+        angle += 0.005;
         camera.position.x = radius * Math.cos(angle);
         camera.position.z = radius * Math.sin(angle);
-        camera.lookAt(new THREE.Vector3(0, 0, 12.470765814495916));
+        camera.lookAt(new THREE.Vector3(0, 0, 0));
     }
     if (keyState.w) camera.position.z -= 0.5;
     if (keyState.s) camera.position.z += 0.5;
