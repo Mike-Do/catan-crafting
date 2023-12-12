@@ -11,10 +11,10 @@ var catan;
 const appState = {
     detail: 2,
     // focus: 0,
-    cloud: true,
-    rain: true,
-    lightning: true,
-    fog: true,
+    cloud: false,
+    rain: false,
+    lightning: false,
+    fog: false,
     reload: function() {
         reloadCatan();
         weather.updateState();
@@ -42,7 +42,7 @@ renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 document.body.appendChild( renderer.domElement );
 
 controls = new OrbitControls(camera, renderer.domElement);
-controls.target.set(0, 0, 12.470765814495916);
+controls.target.set(0, 0, 0);
 camera.position.set(0, 35, 50);
 
 // board is positioned at origin, ensure camera cannot go below the board
@@ -108,7 +108,7 @@ function generateCamera() {
     camera.position.y = 500;
     camera.position.z = 500;
     camera.up.set(0, 1, 0);
-    camera.lookAt(new THREE.Vector3(0, 0, 12.470765814495916));
+    camera.lookAt(new THREE.Vector3(0, 0, 0));
 
     scene.add(camera);
   }

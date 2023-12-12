@@ -127,7 +127,7 @@ function getMesh(tileType, radius, height, center) {
             }
 
             // EASTER EGG DIAMOND
-            if (randomNumber > 0.1 && randomNumber < 0.11) {
+            if (randomNumber > 0.1 && randomNumber < 0.101) {
                 load3DModel("diamond", radius, height, center);
             }
         }
