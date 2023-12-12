@@ -128,10 +128,12 @@ export default class Weather {
             this.noFog = false;
             this.fog = new THREE.Fog( 0xcccccc, 1, 60 );
             this.scene.fog = this.fog;
+            this.appState.fogGoHomeGroup.visible = false;
         } else if (!this.noFog && !this.appState.fog) {
             this.noFog = true;
             this.fog = new THREE.Fog( 0xcccccc, 1000, 1000 );
             this.scene.fog = this.fog;
+            this.appState.fogGoHomeGroup.visible = true;
         }
 
         if (this.rain === null && this.appState.rain) {

@@ -21,6 +21,7 @@ const appState = {
     autoRotate: true,
     lookAt: 0,
     rainGoHomeGroup: null,
+    fogGoHomeGroup: null,
 };
 addGUI(appState);
 
