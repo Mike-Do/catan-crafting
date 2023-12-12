@@ -85,13 +85,13 @@ export default class Weather {
 
     update() {
 
-        this.clouds.forEach(p => {
-            p.lookAt(this.camera.position);
-            // console.log(p.rotation);
+        if (this.clouds !== null) {
+            this.clouds.forEach(p => {
+                p.lookAt(this.camera.position);
+            });
+        }
 
-        });
-
-        if (this.appState.rain !== null) {
+        if (this.rain !== null) {
             var positions = this.rain.children[0].geometry.attributes.position.array;
             for (var i = 1; i < positions.length; i += 3) {
                 // Move raindrops along the y-axis
@@ -106,7 +106,7 @@ export default class Weather {
         }
 
         if (!this.noLightning) {
-            if (Math.random() > 0.96) {
+            if (Math.random() > 0.97) {
                 this.scene.fog = new THREE.Fog( 0xddddff, 0, 0 );
                 setTimeout(() => {
                     this.scene.fog = this.fog;
@@ -126,15 +126,32 @@ export default class Weather {
         if (this.noFog && this.appState.fog) {
             this.noFog = false;
             this.fog = new THREE.Fog( 0xcccccc, 1, 60 );
+            this.scene.fog = this.fog;
         } else if (!this.noFog && !this.appState.fog) {
             this.noFog = true;
-            console.log("fog");
             this.fog = new THREE.Fog( 0xcccccc, 1000, 1000 );
+            this.scene.fog = this.fog;
+        }
+
+        if (this.rain === null && this.appState.rain) {
+            this.rain = this.addRain();
+        } else if (this.rain !== null && !this.appState.rain) {
+            this.removeObject(this.rain);
+            this.rain = null;
+        }
+
+        if (this.clouds === null && this.appState.cloud) {
+            this.clouds = this.addClouds();
+        } else if (this.clouds !== null && !this.appState.cloud) {
+            this.clouds.forEach(p => {
+                this.removeObject(p);
+            });
+            this.clouds = null;
         }
 
     }
 
-    removeObject3D(object3D) {
+    removeObject(object3D) {
         if (!(object3D instanceof THREE.Object3D)) return false;
     
         // for better memory management and performance
