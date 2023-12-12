@@ -147,7 +147,8 @@ var tileCenters = [];
         farmGrass: await new THREE.TextureLoader().loadAsync('./assets/farm_grass.png'),
         hay: await new THREE.TextureLoader().loadAsync('./assets/hay.png'),
         clay: await new THREE.TextureLoader().loadAsync('./assets/clay.png'),
-        clayStone: await new THREE.TextureLoader().loadAsync('./assets/clay_stone.png')
+        clayStone: await new THREE.TextureLoader().loadAsync('./assets/clay_stone.png'),
+        snow: await new THREE.TextureLoader().loadAsync('./assets/snow.png')
     };
 
     // wait for all the 3D models to load before rendering scene

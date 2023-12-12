@@ -139,26 +139,34 @@ function getMesh(tileType, radius, height, center) {
         }
     } else if (tileType == "Mountain") {
         // threshold for stone and mountain_grass
+        MAX_HEIGHT = 5;
         let STONE_HEIGHT = MAX_HEIGHT * 0.2;
         let GRASS_HEIGHT = 0;
+        let SNOW_HEIGHT = MAX_HEIGHT * 0.8;
 
-        if (height > STONE_HEIGHT) {
-            geo = mergeBufferGeometries([geo, currGeo]);
-            material = new THREE.MeshPhysicalMaterial({
-                flatShading: true,
-                map: currTextures.stone
-            });
-        } else if (height > GRASS_HEIGHT) {
+        if (height > GRASS_HEIGHT && height < STONE_HEIGHT) {
             geo = mergeBufferGeometries([geo, currGeo]);
             material = new THREE.MeshPhysicalMaterial({
                 flatShading: true,
                 map: currTextures.mountainGrass
             });
+        } else if (height >= STONE_HEIGHT && height < SNOW_HEIGHT) {
+            geo = mergeBufferGeometries([geo, currGeo]);
+            material = new THREE.MeshPhysicalMaterial({
+                flatShading: true,
+                map: currTextures.stone
+            });
 
             let randomNumber = Math.random();
-            if (randomNumber > 0.1 && randomNumber < 0.8) {
+            if (randomNumber > 0.7 && randomNumber < 0.8) {
                 load3DModel("stone", radius, height, center);
             }
+        } else if (height >= SNOW_HEIGHT) {
+            geo = mergeBufferGeometries([geo, currGeo]);
+            material = new THREE.MeshPhysicalMaterial({
+                flatShading: true,
+                map: currTextures.snow
+            });
         }
     } else if (tileType == "Riverland") {
         let STONE_HEIGHT = MAX_HEIGHT * 0.3;
