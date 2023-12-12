@@ -9,11 +9,13 @@ import { addGUI } from './components/gui';
 var weather;
 const appState = {
     detail: 3,
+    focus: 0,
     cloud: true,
     rain: true,
     lightning: true,
     fog: true,
     reload: function() {
+        reload();
         weather.updateState();
     }
 };
@@ -153,12 +155,34 @@ function loadModelOnce(modelType) {
         loadModelOnce('stone'),
         loadModelOnce('tree')
     ]);
-
     const largerHexagon = getCatan(6, appState.detail, textures, scene, loadedModels);
     scene.add(largerHexagon);
 })();
 
 weather = new Weather(scene, camera, appState);
+
+function reload() {
+removeObject(catan);
+}
+
+function removeObject(object3D) {
+if (!(object3D instanceof THREE.Object3D)) return false;
+
+// for better memory management and performance
+if (object3D.geometry) object3D.geometry.dispose();
+
+if (object3D.material) {
+if (object3D.material instanceof Array) {
+// for better memory management and performance
+object3D.material.forEach(material => material.dispose());
+} else {
+// for better memory management and performance
+object3D.material.dispose();
+}
+}
+object3D.removeFromParent(); // the parent might be the scene or another Object3D, but it is sure to be removed this way
+return true;
+}
 
 camera.position.z = 10;
 

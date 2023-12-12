@@ -250,6 +250,7 @@ function getMesh(tileType, radius, height, center) {
 }
 
 export function getPrisms(center, radius, level, yFlip, textures, tileType, scene, loadedModels) {
+    // error check
     if (textures != undefined) {
         currTextures = textures;
     }
