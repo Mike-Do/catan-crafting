@@ -312,7 +312,7 @@ export function getPrisms(center, radius, level, yFlip, textures, tileType, cata
         childCenter[0] += sign * childrenData[i].cOff[0];
         childCenter[1] += sign * childrenData[i].cOff[1];
         childCenter[2] += sign * childrenData[i].cOff[2];
-        childrenMeshes.push(...getPrisms(childCenter, radius / 2, level - 1, childrenData[i].yFlip));
+        childrenMeshes.push(...getPrisms(childCenter, radius / 2, level - 1, childrenData[i].yFlip, textures, tileType, catanGroup, loadedModels, appState));
     }
 
     return childrenMeshes;
