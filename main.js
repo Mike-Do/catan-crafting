@@ -204,7 +204,7 @@ document.addEventListener('keyup', onDocumentKeyUp, false);
 
 let angle = 0;
 let radius = 10;
-// let autoRotate = true;
+let rotate = true;
 let keyState = { w: false, a: false, s: false, d: false };
 
 function startAutoRotate() {
@@ -213,11 +213,11 @@ function startAutoRotate() {
         angle += Math.PI * 2;
     }
     radius = Math.sqrt(camera.position.x * camera.position.x + camera.position.z * camera.position.z);
-    appState.autoRotate = true;
+    rotate = true;
 }
 
 function stopAutoRotate() {
-    appState.autoRotate = false;
+    rotate = false;
 }
 
 controls.addEventListener('start', stopAutoRotate);
@@ -271,11 +271,11 @@ function animate() {
 
     // camera rotation
     // radius is the curent distance from the center of the scene
-    if (appState.autoRotate && appState.lookAt === 0) {
+    if (appState.autoRotate && rotate && appState.lookAt === 0) {
         angle += 0.005;
         camera.position.x = radius * Math.cos(angle);
         camera.position.z = radius * Math.sin(angle);
-        camera.lookAt(new THREE.Vector3(0, 0, 0));
+        // camera.lookAt(new THREE.Vector3(0, 0, 0));
     }
     if (keyState.w) camera.position.z -= 0.5;
     if (keyState.s) camera.position.z += 0.5;
