@@ -334,25 +334,63 @@ camera.position.z = 10;
 
 // add WASD controls
 document.addEventListener('keydown', onDocumentKeyDown, false);
+document.addEventListener('keyup', onDocumentKeyUp, false);
 
 let angle = 0;
 let radius = 10;
+let autoRotate = true;
+let keyState = { w: false, a: false, s: false, d: false };
+
+function startAutoRotate() {
+    angle = Math.atan2(camera.position.z, camera.position.x);
+    if (angle < 0) {
+        angle += Math.PI * 2;
+    }
+    radius = Math.sqrt(camera.position.x * camera.position.x + camera.position.z * camera.position.z);
+    autoRotate = true;
+}
+
+function stopAutoRotate() {
+    autoRotate = false;
+}
+
+controls.addEventListener('start', stopAutoRotate);
+
+controls.addEventListener('end', startAutoRotate);
+
+
 
 function onDocumentKeyDown(event) {
+    stopAutoRotate();
+
     const keyCode = event.which;
     if (keyCode == 87) {
-        // camera.position.z -= 1;
-        radius -= 0.5;
+        keyState.w = true;
     } else if (keyCode == 83) {
-        // camera.position.z += 1;
-        radius += 0.5;
+        keyState.s = true;
     } else if (keyCode == 65) {
-        // camera.position.x -= 1;
-        angle -= 0.1;
+        keyState.a = true;
     } else if (keyCode == 68) {
-        // camera.position.x += 1;
-        angle += 0.1;
+        keyState.d = true;
     }
+}
+
+function onDocumentKeyUp(event) {
+    switch (event.key) {
+        case 'w':
+            keyState.w = false;
+            break;
+        case 'a':
+            keyState.a = false;
+            break;
+        case 's':
+            keyState.s = false;
+            break;
+        case 'd':
+            keyState.d = false;
+            break;
+    }
+    startAutoRotate();
 }
 
 // called every frame; core function that brings everything together
@@ -397,10 +435,16 @@ function animate() {
 
     // camera rotation
     // radius is the curent distance from the center of the scene
-    angle += 0.01;
-    camera.position.x = radius * Math.cos(angle);
-    camera.position.z = radius * Math.sin(angle);
-    camera.lookAt(new THREE.Vector3(0, 0, 0));
+    if (autoRotate) {
+        angle += 0.01;
+        camera.position.x = radius * Math.cos(angle);
+        camera.position.z = radius * Math.sin(angle);
+        camera.lookAt(new THREE.Vector3(0, 0, 0));
+    }
+    if (keyState.w) camera.position.z -= 0.5;
+    if (keyState.s) camera.position.z += 0.5;
+    if (keyState.a) camera.position.x -= 0.5;
+    if (keyState.d) camera.position.x += 0.5;
 
     weather.update();
 
