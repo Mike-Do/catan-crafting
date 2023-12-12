@@ -11,10 +11,10 @@ var catan;
 const appState = {
     detail: 2,
     // focus: 0,
-    cloud: true,
-    rain: true,
-    lightning: true,
-    fog: true,
+    cloud: false,
+    rain: false,
+    lightning: false,
+    fog: false,
     reload: function() {
         reloadCatan();
         weather.updateState();
@@ -42,7 +42,7 @@ renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 document.body.appendChild( renderer.domElement );
 
 controls = new OrbitControls(camera, renderer.domElement);
-controls.target.set(0, 0, 12.470765814495916);
+controls.target.set(0, 0, 0);
 camera.position.set(0, 35, 50);
 
 // board is positioned at origin, ensure camera cannot go below the board
@@ -108,7 +108,7 @@ function generateCamera() {
     camera.position.y = 500;
     camera.position.z = 500;
     camera.up.set(0, 1, 0);
-    camera.lookAt(new THREE.Vector3(0, 0, 12.470765814495916));
+    camera.lookAt(new THREE.Vector3(0, 0, 0));
 
     scene.add(camera);
   }
@@ -204,7 +204,7 @@ document.addEventListener('keyup', onDocumentKeyUp, false);
 
 let angle = 0;
 let radius = 10;
-// let autoRotate = true;
+let rotate = true;
 let keyState = { w: false, a: false, s: false, d: false };
 
 function startAutoRotate() {
@@ -213,11 +213,11 @@ function startAutoRotate() {
         angle += Math.PI * 2;
     }
     radius = Math.sqrt(camera.position.x * camera.position.x + camera.position.z * camera.position.z);
-    appState.autoRotate = true;
+    rotate = true;
 }
 
 function stopAutoRotate() {
-    appState.autoRotate = false;
+    rotate = false;
 }
 
 controls.addEventListener('start', stopAutoRotate);
@@ -271,11 +271,11 @@ function animate() {
 
     // camera rotation
     // radius is the curent distance from the center of the scene
-    if (appState.autoRotate && appState.lookAt === 0) {
+    if (appState.autoRotate && rotate && appState.lookAt === 0) {
         angle += 0.005;
         camera.position.x = radius * Math.cos(angle);
         camera.position.z = radius * Math.sin(angle);
-        camera.lookAt(new THREE.Vector3(0, 0, 0));
+        // camera.lookAt(new THREE.Vector3(0, 0, 0));
     }
     if (keyState.w) camera.position.z -= 0.5;
     if (keyState.s) camera.position.z += 0.5;
