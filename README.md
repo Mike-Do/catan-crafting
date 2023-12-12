@@ -1,6 +1,7 @@
 <p align="center">
-  <img width="767" alt="Screenshot 2023-12-12 at 2 18 10 PM" src="https://github.com/Mike-Do/catan-crafting/assets/24444124/632c67f4-054b-4925-a350-bccd422435f2">
+  <img width="896" alt="Screenshot 2023-12-12 at 3 17 42 PM" src="https://github.com/Mike-Do/catan-crafting/assets/24444124/44d2ca59-df54-406c-aaf1-d576903c792f">
 </p>
+
 
 # Catan Crafting
 
