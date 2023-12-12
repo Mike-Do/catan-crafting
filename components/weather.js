@@ -55,7 +55,7 @@ export default class Weather {
         var particleCount = 1000;
     
         var rainMaterial = new THREE.PointsMaterial({
-            color: 0xaaaaaa,
+            color: 0xcccccc,
             size: 0.1,
             transparent: true,
             opacity: 0.6

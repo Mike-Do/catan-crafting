@@ -5,6 +5,8 @@ export function addGUI(state) {
 
     gui.add( state, 'detail', 0, 5, 1 );
 
+    gui.
+
     const weather = gui.addFolder( 'Weather' );
     weather.add( state, 'cloud' );
     weather.add( state, 'rain' );
