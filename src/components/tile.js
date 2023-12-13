@@ -1,4 +1,3 @@
-import * as THREE from 'three';
 import { getPrisms } from './prism.js';
 
 export function getTile(center, radius, level, textures, tileType, catanGroup, loadedModels, appState) {

@@ -33,8 +33,7 @@ generateCamera();
 
 const renderer = new THREE.WebGLRenderer();
 
-renderer.setSize( window.innerWidth, window.innerHeight );
-// renderer.setClearColor(0x181716); // Set background color to beige
+renderer.setSize(window.innerWidth, window.innerHeight);
 // set background color to transparent
 renderer.setClearColor(0x000000, 0);
 // add shadow support
@@ -137,19 +136,6 @@ var tileCenters = [];
 (async function () {
     // wait for textures to load before rendering scene
     textures = {
-        // stone: await new THREE.TextureLoader().loadAsync('../public/stone.png'),
-        // grass: await new THREE.TextureLoader().loadAsync('../public/grass.png'),
-        // mountainGrass: await new THREE.TextureLoader().loadAsync('../public/mountain_grass.png'),
-        // water: await new THREE.TextureLoader().loadAsync('../public/water.jpg'),
-        // riverlandGrass: await new THREE.TextureLoader().loadAsync('../public/riverland_grass.png'),
-        // riverlandStone: await new THREE.TextureLoader().loadAsync('../public/riverland_stone.png'),
-        // dirt: await new THREE.TextureLoader().loadAsync('../public/farm_dirt.png'),
-        // farmGrass: await new THREE.TextureLoader().loadAsync('../public/farm_grass.png'),
-        // hay: await new THREE.TextureLoader().loadAsync('../public/hay.png'),
-        // clay: await new THREE.TextureLoader().loadAsync('../public/clay.png'),
-        // clayStone: await new THREE.TextureLoader().loadAsync('../public/clay_stone.png'),
-        // snow: await new THREE.TextureLoader().loadAsync('../public/snow.png')
-        
         stone: await new THREE.TextureLoader().loadAsync('/stone.png'),
         grass: await new THREE.TextureLoader().loadAsync('/grass.png'),
         mountainGrass: await new THREE.TextureLoader().loadAsync('/mountain_grass.png'),
@@ -279,7 +265,6 @@ function animate() {
     controls.update();
 
     if (tileCenters[appState.lookAt] !== undefined) {
-        // camera.lookAt(new THREE.Vector3(...tileCenters[appState.lookAt]));
         const targetPosition = new THREE.Vector3(...tileCenters[appState.lookAt]);
         camera.lookAt(targetPosition);
         controls.target.set(targetPosition.x, targetPosition.y, targetPosition.z);
