@@ -1,10 +1,16 @@
 {
   "dependencies": {
     "simplex-noise": "^4.0.1",
-    "three": "^0.159.0"
+    "three": "^0.159.0",
+    "vite-plugin-copy": "^0.1.6"
   },
   "devDependencies": {
     "lil-gui": "^0.19.1",
-    "vite": "^5.0.5"
+    "vite": "^5.0.5",
+    "vite-plugin-copy": "^0.1.6"
+  },
+  "scripts": {
+    "build": "vite build",
+    "preview": "vite preview"
   }
 }
