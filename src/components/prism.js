@@ -67,8 +67,8 @@ function load3DModel(modelType, radius, height, center, catanGroup, loadedModels
     catanGroup.add(model);
 }
 
-// helper function that returns height randomly generated with perlin noise
-function getPerlinNoise(center, tileType) {
+// helper function that returns height randomly generated with simplex noise
+function getSimplexNoise(center, tileType) {
     let parameter1 = 0.3;
     let maxHeight;
     let parameter2 = 1.5;
@@ -273,7 +273,7 @@ function getMesh(tileType, radius, height, center, textures, catanGroup, loadedM
 export function getPrisms(center, radius, level, yFlip, textures, tileType, catanGroup, loadedModels, appState) {
     if (level === 0) {
         // add simplex noise
-        let height = getPerlinNoise(center, tileType);
+        let height = getSimplexNoise(center, tileType);
 
         center[1] += height / 2;
         const mesh = getMesh(tileType, radius, height, center, textures, catanGroup, loadedModels, appState);
