@@ -3,7 +3,15 @@ import GUI from 'lil-gui';
 export function addGUI(state) {
     const gui = new GUI();
 
-    gui.add( state, 'lookAt' , [0, 1, 2, 3, 4, 5, 6] );
+    gui.add( state, 'lookAt' , {
+        "Grassland": 0,
+        "Farmland 1": 1,
+        "Farmland 2": 2,
+        "Mountain": 3,
+        "Clayland": 4,
+        "Riverland 1": 5,
+        "Riverland 2": 6
+    } );
     gui.add( state, 'autoRotate' );
 
     const weather = gui.addFolder( 'Weather' );
